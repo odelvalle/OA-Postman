@@ -1,0 +1,57 @@
+{
+  "name": "driven-swagger-test",
+  "version": "1.3.1",
+  "description": "Test swagger quality definition and create Postman collection with test",
+  "preferGlobal": true,
+  "bin": "driven-swagger-test.js",
+  "author": "Finect",
+  "repository": "https://github.com/Finect/swagger-test",
+  "license": "Apache-2.0",
+  "keywords": [
+    "swagger",
+    "postman",
+    "definition",
+    "test",
+    "testing",
+    "open api",
+    "specification",
+    "spec"
+  ],
+  "bugs": {
+    "url": "https://github.com/Finect/swagger-test/issues"
+  },
+  "homepage": "https://www.finect.com",
+  "engines": {
+    "node": ">=8"
+  },
+  "dependencies": {
+    "colors": "^1.3.3",
+    "commander": "^2.20.0",
+    "js-beautify": "^1.10.0",
+    "json-schema-faker": "0.5.0-rc23",
+    "newman": "^5.2.3",
+    "postman-collection": "^3.4.7",
+    "request": "^2.88.0",
+    "request-promise-native": "^1.0.7",
+    "swagger-parser": "^10.0.3",
+    "vkbeautify": "^0.99.3"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.4",
+    "eslint": "^8.37.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-node": "^8.0.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-standard": "^4.0.0",
+    "json-server": "^0.14.2",
+    "mocha": "^6.1.4",
+    "nyc": "^14.1.1",
+    "typescript": "^3.4.5"
+  },
+  "scripts": {
+    "test": "mocha --timeout 0 --exit test/*-spec.js",
+    "coverage": "nyc --reporter=text-lcov node_modules/mocha/bin/_mocha --timeout 0 --exit test/*-spec.js | coveralls"
+  }
+}

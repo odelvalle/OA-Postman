@@ -1,0 +1,551 @@
+openapi: 3.0.3
+info:
+  title: Gobierno-del-dato_bf79854979c7_V_2ca4625fa456_V
+  description: Software de gestión de despachos
+  contact:
+    email: apiteam@swagger.io
+  version: 1.0.0
+servers:
+  - url: https://api.example/despachos/v1
+tags:
+  - name: Trabajos
+    description: Permite realizar múltipres operaciones en forma de batch
+    
+paths:
+  /batch:
+    post:
+      description: Realiza múltiples operaciones sobre los modelos.
+      tags:
+        - Trabajos
+      summary: Operaciones y modelos a ejecutar.
+      operationId: JobDynamicData
+      requestBody:
+        $ref: '#/components/requestBodies/events'
+      responses:
+        '202':
+          description: Operación registrada correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+        '400':
+          description: Datos con formato incorrecto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        '401':
+          description: Acceso denegado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+        default:
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+    
+components:
+  requestBodies:
+    events:
+      description: Lista de eventos a procesar
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/event'
+
+  schemas:
+    event:
+      type: object
+      description: Evento de la operación a realizar
+      properties:
+        type:
+          description: Tipo de evento
+          type: string
+          enum:
+            - community
+            - employee
+            - field
+            - owner
+            - provider
+            - office
+        operation:
+          description: Tipo de operación
+          type: string
+          enum:
+            - create
+            - update
+            - delete
+
+        data:
+          description: Modelos a procesar. 
+          type: array
+          items:
+            oneOf:
+              - $ref: '#/components/schemas/field'
+              - $ref: '#/components/schemas/community'
+              - $ref:  '#/components/schemas/employee'
+              - $ref:  '#/components/schemas/owner'
+              - $ref:  '#/components/schemas/provider'
+              - $ref:  '#/components/schemas/office'
+
+    create:
+      description: Operación que crea un modelo
+      properties:
+        type:
+          type: string
+          description: Crea un modelo. Requiere el objeto `data` y no requiere enviar la propiedad `id` de los modelos `data`
+          enum:
+            - create
+        
+    update:
+      description: Operación que actualiza un modelo.
+      properties:
+        id:
+          type: string
+          description: Object ID del modelo a actualizar
+          maxLength: 50
+        type:
+          description: Actualiza un modelo. Requiere el objeto `data` y la propiedad `id` de los modelos `data` sólo se envían en caso de querer actualizarla
+          type: string
+          enum:
+            - update
+
+    delete:
+      description: Operación que elimina un modelo
+      properties:
+        id:
+          type: string
+          description: Object ID del modelo a eliminar
+          maxLength: 50
+        type:
+          description: Elimina un modelo. No requiere del objeto `data`
+          type: string
+          enum:
+            - delete
+          
+    office:
+      properties:
+        params:
+          type: object
+          properties:
+            id:
+              type: string
+              description: Id de la oficina que se desea actualizar
+        models:
+          properties:
+            name:
+              type: string
+              minLength: 1
+              maxLength: 100
+              description: Nombre
+            address:
+              allOf:
+                - $ref: '#/components/schemas/Address'
+                - properties:
+                    country:
+                      description: País de ubicación
+                      type: string
+                      maxLength: 50
+            contact:
+              properties:
+                phone1:
+                  description: Primer teléfono de contacto
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                phone2:
+                  description: Segundo teléfono de contacto
+                  type: string
+                  maxLength: 50
+                email:
+                  description: Email de contacto
+                  type: string
+                  format: email
+            start:
+              description: Fecha de inicio de actividad
+              type: string
+              format: date
+            policy:
+              description: Política de privacidad
+              type: string
+              maxLength: 4000
+            subdomain:
+              description: Subdominio de la oficina
+              type: string
+              maxLength: 50
+
+
+    community:
+      description: Modelo que define las propiedades a importar
+      properties:
+        params:
+          properties:
+            office:
+              type: string
+              description: ID de la oficina sobre la que se realizarán las operaciones de las comunidades.
+            id:
+              type: string
+              description: Id de la comunidad. Sólo es requerido para operaciones de actualización y eliminación de la comunidad.
+        models:
+          type: array
+          items:
+            properties:
+              id:
+                type: string
+                description: Object ID
+                maxLength: 50
+              assets:
+                properties:
+                  houses:
+                    description: Total de apartamentos o casas en la comunidad
+                    type: number
+                    format: int32
+                  commercialsPlaces:
+                    description: Total de locales comerciales
+                    type: number
+                    format: int32
+                  cleaning:
+                    description: Servicio de limpieza
+                    type: boolean
+                  parking:
+                    description: Parking
+                    type: boolean
+                  centralHeating:
+                    description: Centro de salud
+                    type: boolean
+                  commonSpaceLease:
+                    description: Arrendamiento de espacios comunes
+                    type: boolean
+                  swimmingPool:
+                    description: Piscina comunitaria
+                    type: boolean
+                  elevator:
+                    description: Elevador
+                    type: boolean
+                  buildingInsurance:
+                    description: Seguro de la construcción
+                    type: boolean
+                  alarm:
+                    description: Alarma conectada
+                    type: boolean
+                  garden:
+                    description: Jardines
+                    type: boolean
+                  concierge:
+                    description: Servicio de consejería
+                    type: boolean
+                  legalInsurance:
+                    description: Seguro de responsabilidad legal
+                    type: boolean
+                  nightSecurity:
+                    description: Seguridad nocturna
+                    type: boolean
+                  externalPreventionService:
+                    description: Servicio de prevención externa
+                    type: boolean
+                  commonAreas:
+                    description: Areas comunes
+                    type: boolean
+                  requestEnergyEfficiencyReport:
+                    description: Solicitud del reporte de eficiencia energética
+                    type: boolean
+                  requestInsuranceReport:
+                    description: Solicitud del reporte de seguro
+              address:
+                $ref: '#/components/schemas/Address'
+              build:
+                type: string
+                format: date
+              bankAccount:
+                type: string
+                maxLength: 50
+
+    field:
+      description: Modelo que define las propiedades a importar
+      properties:
+        params:
+          properties:
+            administrator:
+              type: string
+              description: Id del administrador sobre el cual se realizarán las operaciones de los campos adicionales.
+            label:
+              description: Nombre del campo
+              type: string
+              maxLength: 50
+        models:
+          type: array
+          items:
+            properties:
+              label:
+                description: Nombre del campo
+                type: string
+                maxLength: 50
+              type:
+                description: Tipo de campo
+                type: string
+                enum:
+                  - Texto
+                  - Fecha
+                  - Texto largo
+                  - Teléfono
+              validation:
+                description: Validación del campo
+                type: string
+                enum:
+                  - Ninguna
+                  - Requerido
+                  - Numérico
+              order:
+                description: Orden del campo
+                type: number
+                format: int32
+                minimum: 1
+                maximum: 20
+              size:
+                description: Tamaño del campo en una rejilla de 12 columnas
+                type: number
+                format: int32
+                minimum: 1
+                maximum: 12
+              value:
+                description: Valor del campo
+                type: string
+                maxLength: 4000
+          
+    employee:
+      description: Modelo que define las propiedades a importar
+      properties:
+        params:
+          type: object
+          properties:
+            office:
+              type: string
+              description: Id de la oficina a la que pertenece el empleado
+            community:
+              type: string
+              description: Id de la comunidad a la que pertenece el empleado
+            id:
+              type: string
+              description: Id del empleado que se desea actualizar o borrar.
+        models:
+          type: array
+          items:
+            properties:
+              id:
+                type: string
+                description: Object ID
+                maxLength: 50
+              name:
+                description: Nombre
+                type: string
+                maxLength: 50
+              surname1:
+                description: Primer apellido
+                type: string
+                maxLength: 50
+              surname2:
+                description: Segundo apellido
+                type: string
+                maxLength: 50
+              email:
+                description: email
+                type: string
+                format: email
+              phone:
+                description: Teléfono
+                type: string
+                format: ^[0-9]*$
+                maxLength: 50
+
+    owner:
+      description: Modelo que define las propiedades a importar
+      properties:
+        params:
+          type: object
+          properties:
+            community:
+              type: string
+              description: Id de la comunidad a la que pertenece el propietario
+            id:
+              type: string
+              description: Id del propietario que se desea actualizar o borrar.
+        models:
+          type: array
+          items:
+            properties:
+              id:
+                type: string
+                description: Object ID
+                maxLength: 50
+              name:
+                description: Nombre
+                type: string
+                maxLength: 50
+              surname1:
+                description: Primer apellido
+                type: string
+                maxLength: 50
+              surname2:
+                description: Segundo apellido
+                type: string
+                maxLength: 50
+              email:
+                description: email
+                type: string
+                format: email
+              phone:
+                description: Teléfono
+                type: string
+                format: ^[0-9]*$
+                maxLength: 50
+
+    provider:
+      description: Modelo que define las propiedades a importar
+      properties:
+        params:
+          type: object
+          properties:
+            community:
+              type: string
+              description: Id de la comunidad a la que pertenece el proveedor
+            id:
+              type: string
+              description: Id del proveedor que se desea actualizar o borrar.
+        models:
+          type: array
+          items:
+            properties:
+              id:
+                description: Número del documento del proveedor
+                type: string
+                maxLength: 50
+              start:
+                description: Fecha de inicio del contrato con el proveedor
+                type: string
+                format: date
+              end:
+                description: Fecha de fin del contrato con el proveedor
+                nullable: true
+                type: string
+                format: date
+              freelance:
+                description: Es trabajador autónomo
+                type: boolean
+              CNAE:
+                description: Tamaño del campo en una rejilla de 12 columnas
+                type: string
+                minLength: 1
+                maxLength: 20
+  
+    Address:
+      type: object
+      properties:
+        line:
+          type: string
+          minLength: 1
+          maxLength: 100
+        city:
+          type: string
+          minLength: 1
+          maxLength: 100
+        province:
+          type: string
+          enum:
+            - Álava
+            - Albacete
+            - Alicante
+            - Almería
+            - Ávila
+            - Badajoz
+            - Islas Baleares
+            - Barcelona
+            - Burgos
+            - Cáceres
+            - Cádiz
+            - Cantabria
+            - Castellón
+            - Ciudad Real
+            - Córdoba
+            - La Coruña
+            - Cuenca
+            - Girona
+            - Granada
+            - Guadalajara
+            - Gipuzkoa
+            - Huelva
+            - Huesca
+            - Jaén
+            - León
+            - Lleida
+            - La Rioja
+            - Lugo
+            - Madrid
+            - Málaga
+            - Murcia
+            - Navarra
+            - Ourense
+            - Asturias
+            - Palencia
+            - Las Palmas
+            - Pontevedra
+            - Salamanca
+            - Santa Cruz de Tenerife
+            - Segovia
+            - Sevilla
+            - Soria
+            - Tarragona
+            - Teruel
+            - Toledo
+            - Valencia
+            - Valladolid
+            - Bizkaia
+            - Zamora
+            - Zaragoza
+            - Ceuta
+            - Melilla
+        postalCode:
+          type: string
+          example: 28806
+          maxLength: 5
+          
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          description: Código HTTP de respuesta
+          type: integer
+          format: int32
+        message:
+          description: Pequeña descripción del resultado de la operación
+          type: string
+          maxLength: 250
+    ApiResponseError:
+      type: object
+      properties:
+        code:
+          description: Código HTTP de respuesta
+          type: integer
+          format: int32
+        internal:
+          description: Código de respuesta interno reslacionado con el error
+          type: string
+          maxLength: 50
+        message:
+          description: Pequeña descripción del resultado de la operación
+          type: string
+          maxLength: 250
+  securitySchemes:
+    # 1) Define the security scheme type (HTTP bearer)
+    bearerAuth:            
+      type: http
+      scheme: bearer
+      bearerFormat: JWT    
+      
+# 2) Apply the security globally to all operations
+security:
+  - bearerAuth: []    

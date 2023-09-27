@@ -1,0 +1,1381 @@
+{
+  "item": [
+    {
+      "name": "pet",
+      "item": [
+        {
+          "name": "Add a new pet to the store",
+          "item": [
+            {
+              "id": "a936bb96-c0e7-4011-b3eb-204a3110344b",
+              "name": "[201] New pet created - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"sit ex\",\n    \"photoUrls\": [\n        \"amet laborum\",\n        \"\",\n        \"enim ut minim\",\n        \"aliqua ut ut ad\"\n    ]\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "41160a21-d844-490a-b34e-1775df7f2d4e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 201\", function() {",
+                      "  pm.response.to.have.status(201);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "d1136922-28b5-46d0-aca8-661f446c6bd7",
+              "name": "[400] Invalid input - w/ name",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"photoUrls\": [\n        \"officia\"\n    ]\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "71372d29-f138-4f45-932c-682cfd7c0d9e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "0c684282-d671-4f9b-a7d0-e0176f31dc9a",
+              "name": "[400] Invalid input - w/ photoUrls",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"aliquip\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3c3c976f-8314-4e1c-91a2-9ebb41d7bf7b",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "4fc0c4d7-a4ff-4cff-be05-e607a94a6455",
+              "name": "[401] Unauthorized",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"pariatur magna non fugiat exercitation\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "6bba7a2b-4850-46dd-ad86-62d1356168f2",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "Finds Pets by status",
+          "item": [
+            {
+              "id": "2d175c0a-a443-4e05-b3cd-73545a64917d",
+              "name": "[200] successful operation - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "available,available",
+                      "disabled": false
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "d4289038-4267-4ec2-95de-c351d6d594d6",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "92e4a452-2db2-4827-bc14-ede97ba6e139",
+              "name": "[400] Invalid status value - status",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "fake-invalid-value",
+                      "disabled": false
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "db280243-3463-4aaa-bf46-692c2867aee5",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "b84f9f85-bd31-4820-8770-e5286a1de48c",
+              "name": "[401] Unauthorized",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "available,available,available",
+                      "disabled": false
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "7c65cf12-d28f-49c5-8ee7-020199dfba7a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "dc80b1db-d9c1-4be4-ba4d-a9ca0988685d",
+              "name": "[404] Pet not found",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    "findByStatus"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "available,available",
+                      "disabled": false
+                    }
+                  ],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e3b8610d-be0d-4856-9411-eaeb2082f06c",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 404\", function() {",
+                      "  pm.response.to.have.status(404);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "Find pet by ID",
+          "item": [
+            {
+              "id": "7d2352b7-8c12-4fd9-8672-8d8f767d1031",
+              "name": "[200] successful operation - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "689795"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "1910cb22-a948-4e83-b941-1300fd33503e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "52650c53-8724-4eaf-a82d-35d14f586adc",
+              "name": "[400] Invalid ID supplied - petId",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "fake-invalid-value"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "ebbcfb65-c60f-4b3c-8502-65a91c320311",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "5ac18be2-9d67-4240-980b-ad0f87ba325e",
+              "name": "[401] Unauthorized",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "42553837"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "55968be7-e39b-484b-b24a-7fc92a335afa",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "3b827127-4406-42a7-85f7-90b463e2d504",
+              "name": "[404] Pet not found",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-98804006"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "{{api_key}}"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "2c3be30d-41b7-4e48-b630-53ca808ad91e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 404\", function() {",
+                      "  pm.response.to.have.status(404);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "Update an existing pet",
+          "item": [
+            {
+              "id": "55767088-414a-4413-b17d-e0a1791bbe3a",
+              "name": "[200] Pet updated - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "7784252"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"name\": \"velit\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "29917125-36d6-43e2-af74-60db75ee56e8",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "18921935-8fe6-4134-8563-a93bc6df4dfa",
+              "name": "[400] Invalid input - petId",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "fake-invalid-value"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "PUT"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "45fb0b24-253a-4f76-93f4-fa63984ac93d",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "399d3007-4c13-4ed4-9093-7a8c4a6e8bba",
+              "name": "[400] Invalid input - w/ name",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-4922974"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "56bd45a1-5de3-467a-bf21-22d7e5dae164",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "4e91bc98-9fee-4f7f-8dcd-207934d6ddd3",
+              "name": "[401] Unauthorized",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-90625871"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "095e981d-0caa-46c7-a21e-682f2458d72b",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "b9d1fce5-07f0-42d5-bad0-a86110115375",
+              "name": "[404] Pet not found",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "53371997"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "PUT",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "dd71b5d4-4761-4bb0-9016-d91fbeeec112",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 404\", function() {",
+                      "  pm.response.to.have.status(404);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "Deletes a pet",
+          "item": [
+            {
+              "id": "f898f114-3cd5-4cb7-b207-6d5fc5cb1401",
+              "name": "[204] Pet deleted - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-75220528"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "lab",
+                    "disabled": false
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "bc894da4-99e1-4642-a0a2-5ec1addedb5d",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Body is empty\", function() {",
+                      "  var data = pm.response.text();",
+                      "  pm.expect(data === undefined || data === '').to.eql(true);",
+                      "});",
+                      "pm.test(\"Status code is 204\", function() {",
+                      "  pm.response.to.have.status(204);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "b754ffbb-b388-4282-a778-2f7168f56a5a",
+              "name": "[204] Pet deleted - all parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-59390718"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "aliqua",
+                    "disabled": false
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "2c1a0bc6-73ff-494c-927e-4e9fa74decd4",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Body is empty\", function() {",
+                      "  var data = pm.response.text();",
+                      "  pm.expect(data === undefined || data === '').to.eql(true);",
+                      "});",
+                      "pm.test(\"Status code is 204\", function() {",
+                      "  pm.response.to.have.status(204);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "f3f6cef9-69f2-4fc6-be97-ac48ab4476e4",
+              "name": "[400] Invalid ID supplied - api_key",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "2897973"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": null,
+                    "disabled": false
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "08ff0a4d-9c71-4289-a429-0bd56668d6c4",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "6b50d16f-d22f-4e08-967a-36c1d4b2c747",
+              "name": "[400] Invalid ID supplied - petId",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "fake-invalid-value"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "ad Lorem",
+                    "disabled": true
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "b11356a8-270c-4dfc-ba3e-12010d07b262",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "7134d8ba-5e37-4dbf-b022-7e99e7d78906",
+              "name": "[401] Unauthorized",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "19496929"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "magna occaecat",
+                    "disabled": true
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "64dce4a9-5b52-4820-84f1-790f082e1ed1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "0d27665d-b6aa-41c7-888c-2f0b991d3b5d",
+              "name": "[404] Pet not found",
+              "request": {
+                "url": {
+                  "path": [
+                    "pet",
+                    ":petId"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": [
+                    {
+                      "key": "petId",
+                      "value": "-85893367"
+                    }
+                  ]
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": ""
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "api_key",
+                    "value": "laboris esse",
+                    "disabled": true
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "{{authorization}}"
+                  }
+                ],
+                "method": "DELETE"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "60128a7b-f19d-41a2-80c9-1cec656484b1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 404\", function() {",
+                      "  pm.response.to.have.status(404);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "id": "status",
+      "type": "string",
+      "value": "available",
+      "key": "status"
+    },
+    {
+      "id": "authorization",
+      "type": "string",
+      "value": "unsupported",
+      "key": "authorization"
+    },
+    {
+      "id": "base-url",
+      "type": "string",
+      "value": "http://localhost:3000",
+      "key": "base-url"
+    }
+  ],
+  "info": {
+    "_postman_id": "c0a6e7dc-3dc2-482a-9db5-d9c019928681",
+    "name": "Swagger Petstore",
+    "version": {
+      "raw": "1.0.0",
+      "major": 1,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [],
+      "build": [],
+      "string": "1.0.0"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "openapi.tryit.insecureSslHostnames": [
+    "dev-kong.cloudappi.net"
+  ]
+}

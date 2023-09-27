@@ -1,0 +1,1685 @@
+openapi: 3.0.0
+info:
+  title: Developer Portal CRUD
+  description: CRUD de developer portals y publicación de apis
+  version: 1.0.0
+  contact:
+    name: API responsible person
+    url: 'http://sura-apimanagement-dev.azure-api.net/support'
+    email: api-support@segurossura.com.mx
+servers:
+  - url: 'https://apim-connector-dev.apimarket.io'
+    description: Development server
+tags:
+  - name: Organizations
+    description: Operations and resources related to organizations
+  - name: Environments
+    description: Operations and resources related to environments
+  - name: Developer portals
+    description: Operations and resources related to developer portals
+  - name: Apis
+    description: Operations and resources related to apis
+paths:
+  '/organizations':
+    post:
+      summary: createOrganization
+      operationId: createOrganization
+      description: create an organization
+      tags:
+        - Organizations
+      requestBody:
+        $ref: '#/components/requestBodies/createOrganizationRequestBody'
+      responses:
+        '201':
+          description: Organization creation response
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/organization'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    get:
+      summary: getOrganizations
+      operationId: getOrganizations
+      description: list all organizations
+      tags:
+        - Organizations
+      responses:
+        '200':
+          description: Organization list response
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/organization'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/organizations/{organizationExternalId}':
+    get:
+      summary: getOrganization by Id
+      operationId: getOrganization
+      description: get an organization
+      tags:
+        - Organizations
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      responses:
+        '200':
+          description: Organization creation response
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/organization'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    put:
+      summary: update an organization
+      operationId: updateOrganization
+      description: update an organization
+      tags:
+        - Organizations
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      requestBody:
+        $ref: '#/components/requestBodies/updateOrganizationRequestBody'
+      responses:
+        '201':
+          description: Organization update response
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/organization'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    delete:
+      summary: delete organization
+      operationId: deleteOrganization
+      description: delete an organization
+      tags:
+        - Organizations
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/organizations/{organizationExternalId}/environments':
+    post:
+      summary: create environment
+      operationId: createEnvironment
+      description: create an environment for an organization
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      requestBody:
+        $ref: '#/components/requestBodies/createEnvironmentRequestBody'
+      responses:
+        '201':
+          description: Environment creation response
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/environment'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    get:
+      summary: get environments from an organization
+      operationId: getEnvironments
+      description: list all organizations' environments
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      responses:
+        '200':
+          description: Environment list response
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/environment'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/organizations/{organizationExternalId}/environments/{environmentId}':
+    get:
+      summary: get an environment from an organization
+      operationId: getEnvironment
+      description: get an organization's environment by id
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: Environment list response
+          content: 
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/environment'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    put:
+      summary: update environment
+      operationId: updateEnvironment
+      description: update an environment for an organization
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      requestBody:
+        $ref: '#/components/requestBodies/updateEnvironmentRequestBody'
+      responses:
+        '201':
+          description: Environment update response
+          content: 
+            application/json:
+              schema:
+                $ref: '#/components/schemas/environment'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    delete:
+      summary: delete environment
+      operationId: deleteEnvironment
+      description: delete an environment for an organization
+      tags:
+        - Environments
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '201':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/external-org/{organizationExternalId}/developer-portal':
+    get:
+      summary: getDeveloperPortals
+      operationId: getDeveloperPortals
+      description: get developer portals from an organization
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+      tags:
+        - Developer portals
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/developer-portal'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/external-org/{organizationExternalId}/environment/{environmentId}/developer-portal':
+    get:
+      summary: getDeveloperPortalById
+      operationId: getDeveloperPortalById
+      description: get developer portal information from an environment 
+      tags:
+        - Developer portals
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/developer-portal'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    post:
+      summary: createDeveloperPortal
+      operationId: createDeveloperPortal
+      description: deploy or reference a developer portal
+      tags:
+        - Developer portals
+      requestBody:
+        $ref: '#/components/requestBodies/developerPortalCreateRequestBody'
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/developer-portal'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    delete:
+      summary: deleteDeveloperPortal
+      operationId: deleteDeveloperPortal
+      description: delete a developer portal by Id
+      tags:
+        - Developer portals
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/external-org/{organizationExternalId}/environment/{environmentId}/developer-portal/api':
+    get:
+      summary: getPublishedApis
+      operationId: getPublishedApis
+      description: get list of published apis in environment
+      tags:
+        - Apis
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/publishedApi'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    post:
+      summary: publishApi
+      operationId: publishApi
+      description: publish api to developer portal
+      tags:
+        - Apis
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+      requestBody:
+        $ref: '#/components/requestBodies/publishApiRequestBody'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/publishedApi'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/external-org/{organizationExternalId}/environment/{environmentId}/developer-portal/api/{apiId}':
+    get:
+      summary: getApiById
+      operationId: getApiById
+      description: get api information by Id
+      tags:
+        - Apis
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+        - $ref: '#/components/parameters/apiId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/publishedApi'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+    post:
+      summary: unpublishApi
+      operationId: unpublishApi
+      description: unpublish api by Id
+      tags:
+        - Apis
+      parameters:
+        - $ref: '#/components/parameters/organizationExternalId'
+        - $ref: '#/components/parameters/environmentId'
+        - $ref: '#/components/parameters/apiId'
+      responses:
+        '200':
+          description: OK
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+  '/external-org/api/{apiId}/developer-portal':
+    get:
+      summary: get devportals by api Id
+      operationId: getApiDevportals
+      description: get developer portals where an api is published
+      tags:
+        - Apis
+      parameters:
+        - $ref: '#/components/parameters/apiId'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/developer-portal'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '405':
+          $ref: '#/components/responses/methodNotAllowed'
+        '406':
+          $ref: '#/components/responses/notAcceptableResponse'
+        '408':
+          $ref: '#/components/responses/requestTimeOut'
+        '409':
+          $ref: '#/components/responses/conflict'
+        '413':
+          $ref: '#/components/responses/payloadTooLargeResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '429':
+          $ref: '#/components/responses/tooManyRequestsResponse'
+        '500':
+          $ref: '#/components/responses/internalServerErrorResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+components:
+  parameters:
+    organizationExternalId:
+      in: path
+      description: organization external ID
+      schema:
+        type: string
+        example: da3b5127-56d9-4173-9991-3f6f3a78817f
+      required: true
+      name: organizationExternalId
+    environmentId:
+      in: path
+      description: environment ID
+      schema:
+        type: string
+      required: true
+      name: environmentId
+    apiId:
+      in: path
+      description: Api ID
+      schema:
+        type: string
+        example: da3b5127-56d9-4173-9991-3f6f3a78817f
+      required: true
+      name: apiId
+  schemas:
+    developer-portal:
+      type: object
+      properties:
+        id:
+          type: string
+          description: the resource ID
+          example: da3b5127-56d9-4173-9991-3f6f3a78817f
+        name:
+          type: string
+          description: the name of the developer portal
+          example: developer portal 1
+        front_url:
+          type: string
+          description: developer portal front url
+          example: 'https://example-portal.apimarket.io'
+        cms_url:
+          type: string
+          description: developer portal cms url
+          example: 'https://example-portal-cms.apimarket.io'
+        cms_user:
+          type: string
+        cms_password:
+          type: string
+        status:
+          type: string
+          description: developer portal status
+          example: active
+        isProduction:
+          type: boolean
+          description: indicates wether a developer portal is on a production environment or not
+          example: true
+        environment_id:
+          type: string
+        front_pipeline_status:
+          type: string
+        back_pipeline_status:
+          type: string
+        created_at:
+          type: string
+          format: date
+        updated_at:
+          type: string
+          format: date
+    publishedApi:
+      type: object
+      properties:
+        slug:
+          type: string
+          description: Strapi identifier
+          example: x-ample-api
+    organization:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        description:
+          type: string
+        external_id:
+          type: string
+        createdAt:
+          type: string
+        updateAt:
+          type: string
+    environment:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        apim:
+          type: string
+        isProduction:
+          type: boolean
+        createdAt:
+          type: string
+        updateAt:
+          type: string
+    standardResponse:
+      type: object
+      properties:
+        data:
+          anyOf:
+            - type: object
+              nullable: true
+            - type: array
+              nullable: true
+              items:
+                type: object
+        result:
+          type: object
+      required:
+        - data
+    standardError:
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 20
+          description: Code of the error
+          example: SERR100
+        description:
+          type: string
+          minLength: 2
+          maxLength: 250
+          description: Description of the error
+          example: Error description
+        field:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Field with the error
+          example: Username
+        traceId:
+          description: Trace identificator
+          type: string
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          example: e3613ba0-ca8f-11ec-9d64-0242ac120002
+      required:
+        - code
+        - description
+    standardErrorResponse:
+      allOf:
+        - $ref: '#/components/schemas/standardResponse'
+        - type: object
+          properties:
+            errors:
+              type: array
+              items:
+                $ref: '#/components/schemas/standardError'
+      required:
+        - data
+        - errors
+    strictTransportSecurityHeader:
+      type: string
+      minLength: 10
+      maxLength: 100
+      example: max-age=<expire-time>; includeSubDomains
+    contentSecurityPolicyHeader:
+      type: string
+      minLength: 10
+      maxLength: 100
+      example: default-src 'self' *.trusted.com
+    referrerPolicyHeader:
+      type: string
+      minLength: 10
+      maxLength: 100
+      example: strict-origin
+    permissionsPolicyHeader:
+      type: string
+      minLength: 10
+      maxLength: 100
+      example: 'geolocation=("https://your-site.example" "https://a.example" "https://b.example")'
+    locationHeader:
+      type: string
+      maxLength: 2048
+      pattern: '^(?:(?:((http|https):\/\/)?[^\/]+))?(?:\/|^)((?:[^#\.\/:?\n\r]+\/?)+(?=\?|#|$|\.|\/))$'
+      example: /resources/acd0df8b-651a-4e8b-aeb3-a448408d90fb
+    deployDeveloperPortalSchema:
+      type: object
+      properties:
+        user_name:
+          type: string
+        user_lastname:
+          type: string
+        user_email:
+          type: string
+        contact_email:
+          type: string
+      required:
+        - user_name
+        - user_lastname
+        - user_email
+        - contact_email
+    referenceDeveloperPortalSchema:
+      type: object
+      properties:
+        front_url:
+          type: string
+        cms_url:
+          type: string
+        cms_user:
+          type: string
+        cms_password:
+          type: string
+      required:
+        - front_url
+        - cms_url
+        - cms_user
+        - cms_password
+  requestBodies:
+    developerPortalCreateRequestBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  deployment:
+                    type: boolean
+                required:
+                  - name
+                  - deployment
+              - oneOf:
+                  - $ref: '#/components/schemas/deployDeveloperPortalSchema'
+                  - $ref: '#/components/schemas/referenceDeveloperPortalSchema'
+                discriminator:
+                  propertyName: deployment
+                  mapping:
+                    'true': '#/components/schemas/deployDeveloperPortalSchema'
+                    'false': '#/components/schemas/referenceDeveloperPortalSchema'
+    publishApiRequestBody:
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              slug:
+                type: string
+                description: Strapi unique identifier
+                example: x-ample-api
+              title:
+                type: string
+              image:
+                type: string
+              tags:
+                type: array
+                items:
+                  type: string
+              status:
+                type: string
+              descripcion:
+                type: string
+              products:
+                type: array
+                items:
+                  type: string
+              benefits:
+                type: array
+                items:
+                  type: string
+              version:
+                type: string
+              openapi:
+                type: string
+                format: binary
+            required:
+              - slug
+              - openapi
+              - title
+              - status
+              - version
+    createOrganizationRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              external_id:
+                type: string
+            required:
+              - name
+    updateOrganizationRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              external_id:
+                type: string
+    createEnvironmentRequestBody:
+      content:
+        application/json:
+          schema:
+            allOf:
+              - type: object
+                properties:
+                  name:
+                    type: string
+                  description:
+                    type: string
+                  apim:
+                    type: string
+                  apiVersion:
+                    type: string
+                  baseUrl:
+                    type: string
+                  baseUrlFront:
+                    type: string
+                  baseUrlBack:
+                    type: string
+                  adminGroup:
+                    type: string
+                  subscription_id:
+                    type: string
+                  resource_group_name:
+                    type: string
+                  service_name:
+                    type: string
+                  isProduction:
+                    type: boolean
+                required:
+                  - name
+                  - apim
+                  - apiVersion
+                  - baseUrl
+                  - baseUrlFront
+                  - baseUrlBack
+                  - adminGroup
+                  - subscription_id
+                  - resource_group_name
+                  - service_name
+                  - isProduction
+              - oneOf:
+                - type: object
+                  properties:
+                    api_primary_key:
+                      type: string
+                    apim_uid:
+                      type: string
+                    api_token_valid_days:
+                      type: number
+                  required:
+                    - api_primary_key
+                    - apim_uid
+                    - api_token_valid_days
+                - type: object
+                  properties:
+                    api_token:
+                      type: string
+                  required:
+                    - api_token
+    updateEnvironmentRequestBody:
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+              description:
+                type: string
+              apim:
+                type: string
+              apiVersion:
+                type: string
+              baseUrl:
+                type: string
+              baseUrlFront:
+                type: string
+              baseUrlBack:
+                type: string
+              adminGroup:
+                type: string
+              api_primary_key:
+                type: string
+              api_token:
+                type: string
+              subscription_id:
+                type: string
+              resource_group_name:
+                type: string
+              service_name:
+                type: string
+              isProduction:
+                type: boolean
+  responses:
+    badRequestResponse:
+      description: Bad request
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Bad Request:
+              value:
+                data: null
+                errors:
+                  - code: '400'
+                    description: Bad request
+                    field: field
+                    traceId: 6ff801b6-ca90-11ec-9d64-0242ac120002
+    unauthorizedResponse:
+      description: Unauthorized
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Unauthorized:
+              value:
+                data: null
+                errors:
+                  - code: '401'
+                    description: Unauthorized
+    forbiddenResponse:
+      description: Forbidden
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Forbidden:
+              value:
+                data: null
+                errors:
+                  - code: '403'
+                    description: Forbidden
+    notFoundResponse:
+      description: Not found
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Not found:
+              value:
+                data: null
+                errors:
+                  - code: '404'
+                    description: Not found
+    methodNotAllowed:
+      description: Method not Allowed
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Method not Allowed:
+              value:
+                data: null
+                errors:
+                  - code: '405'
+                    description: Method not Allowed
+    notAcceptableResponse:
+      description: Not Acceptable
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Not Acceptable:
+              value:
+                data: null
+                errors:
+                  - code: '406'
+                    description: Not Acceptable
+    requestTimeOut:
+      description: Request Time Out
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Request Time Out:
+              value:
+                data: null
+                errors:
+                  - code: '408'
+                    description: Request Time Out
+    conflict:
+      description: Conflict
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Conflict:
+              value:
+                data: null
+                errors:
+                  - code: '409'
+                    description: Conflict
+    payloadTooLargeResponse:
+      description: Payload Too Large
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Payload Too Large:
+              value:
+                data: null
+                errors:
+                  - code: '413'
+                    description: Unsupported Media Type
+    unsupportedMediaTypeResponse:
+      description: Unsupported Media Type
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Unsupported Media Type:
+              value:
+                data: null
+                errors:
+                  - code: '415'
+                    description: Unsupported Media Type
+    tooManyRequestsResponse:
+      description: Too many requests
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Too many requests:
+              value:
+                data: null
+                errors:
+                  - code: '429'
+                    description: Too many requests
+    internalServerErrorResponse:
+      description: Internal server error
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Internal server error:
+              value:
+                data: null
+                errors:
+                  - code: '500'
+                    description: Internal server error
+    serviceUnavailableResponse:
+      description: Service unavailable
+      headers:
+        strict-transport-security:
+          description: Strict transport security header
+          schema:
+            $ref: '#/components/schemas/strictTransportSecurityHeader'
+        content-security-policy:
+          description: Content security policy header
+          schema:
+            $ref: '#/components/schemas/contentSecurityPolicyHeader'
+        referrer-policy:
+          description: Referrer policy header
+          schema:
+            $ref: '#/components/schemas/referrerPolicyHeader'
+        permissions-policy:
+          description: Permissions policy header
+          schema:
+            $ref: '#/components/schemas/permissionsPolicyHeader'
+        location:
+          description: Location header
+          schema:
+            $ref: '#/components/schemas/locationHeader'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          examples:
+            Service unavailable:
+              value:
+                data: null
+                errors:
+                  - code: '503'
+                    description: Service unavailable

@@ -1,0 +1,3995 @@
+openapi: "3.0.0"
+info:
+  version: v1
+  title: EjemploAlumnosJAPI
+  description: |
+    ----
+    ## Descripción del API
+    Api de prueba para JAPI de para Alumnos
+    Rest en el backend: **JAPI_REST_EJEMPLO_ALUMNOS**
+    Este API es un ejemplo para resumir en un sólo REST todas o casi toda las funcionalidades implementadas en JAPI y ejemplo de como implementar casos concretos.
+    En cada endpoint se explica de que cosas es un ejemplo concreto ese endpoint (validada por Gobierno API's)
+    ## Códigos de error de todo el API (se especifican en cada recurso):
+    |Código|Error|
+    | -- | -- |
+    |2001|Fecha de nacimiento incorrecta. Valores válidos del año 1900 al actual|
+    |2002|Sólo puede dar de alta o consultar una solicitud o adjunto si usted dio de alta esa solicitud
+    |2003|Su NIF no coincide con el del alumno del que está solicitando las notas
+    |2004|NIF no válido
+    ----
+    ## Modificaciones al swagger:
+      - 2022-09-13 GET /asignaturas/{id_asignatura} metido profesor (objeto anidado) cuyos campos son de la tabla principal (asignaturas)
+      - 2022-09-13 Añadido recurso GET /municipios/{id_provincia}/{id_municipio}
+      - 2022-09-21 Añadido recurso GET /alumnos/excel y modelo alumno_excel
+      - 2022-11-28 Añadido PUT y DELETE de /asignaturas (con un body con objetos anidados)
+      - 2022-12-13 Corregido el maxLength=30 de nombre_alumno en los PUT. En el POST de alumnos se declaran también como required 'nombre_alumno' y 'nif'.
+      - 2022-12-14 /alumnos-resumen/get - POST:
+        - Se eliminan "cd_prov_municipio" y "municipio" del POST - Response Mapping (no están en la vista en la que se basa este controller, ni  procede incluirlos en la respuesta)
+        - Se renombra "cd_prov_municpio" como "cd_prov_municipio" en los query params
+      - 2022-12-22 Mejora de comentarios del swagger (porqué se devuelve id pero no uuid en algunos casos, baja lógica cuando se hace un DELETE, etc.)
+      - 2022-12-27 Correciones varias:
+        - Se eliminan los header Location en el response de los POST/PUT de alumnos.
+        - /asignarutas POST: El response 201 incluía un "/standard_delete_response" y se sustituye por un "/post_asignatura_response" que se crea. Se añade ejemplo corregido.
+        - /asignarutas PUT:  El response 200 incluye un "/standard_delete_response" y se sustituye por un "/asignatura_response".
+        - DELETE: Al ejemplo existenete (standard_delete_response_example) se añade el standard_delete_response_example_SOLO_ID, en el que no se devuelve uuid, sino el identificador.
+        En la respuesta standard_delete_response se añaden los dos ejemplos como "Ejemplo 1 (uuid)" y "Ejemplo 2 (id)".
+        Se comenta lo anterior en /asignaturas DELETE, que sigue el "Ejemplo 2 (id)".
+      - 2023-01-09 Se incluye el recurso /alumnos/{uuid_alumno}/completo y se añade, dentro de los recursos de asignatura, dos cabeceras, una, requerida, para los recursos que editan datos, y otra, opcional, para los recursos que leen.
+      - 2023-01-11 Metido la definición de asignatura_with_id y usado en el recurso POST /asignaturas: El asignatura para el body y el asignatura_with_id para el response
+      - 2023-01-12 Quitado las variables required del put de alumnos y comentado el post_put_asignatura_body_param de asignaturas
+      - 2023-01-16 Corregido PUT /alumnos/{uuid_alumno}/completo:
+        - El schema del body request, asignaturas debe ser un $ref a asignatura_with_id (había un $ref a asignatura)
+        - Ejemplo de body request
+        - Se corrijen descripciones del PUT de alumnos y alumnos completo, y typos en ejemplos (p.e. id_asginaturas)
+      - 2023-01-16 añadido el campo fecha_inscripcion al alumno de tipo date-time
+      - 2023-01-20 Añadidas dos querystring_numero_1 y 2 como variables tipo querystring en aisgnaturas
+      - 2023-01-23 Añadido a la querystring_numero_2 un enum como ejemplo para validad desde código
+      - 2023-01-24 Añadido POST /alumnos/completo
+      - 2023-01-30 Metido en GET /alumnos dos queryString: curso y edad
+      - 2023-02-06 Se elimina el cd_prov_municipio_query_param, y se quita el parámetro cd_prov_municipio del alumnos-resumen.
+        - Se introduce fecha_inscripcion en varios recursos/controladores donde faltaba, y se incluye en los ejemplos.
+  contact:
+    name: Área de Arquitecturas Digitales
+    url: https://gestiona3.madrid.org/arquitecturasw/index.php/normativa-menu/apis/construccion
+    email: MD_ARQUITECTURAS_DIGITALES@madrid.org
+servers:
+  - url: https://apis.val.comunidad.madrid/ciencia-tecnologia/japi-alumnos-test
+    description: Entorno de validación
+  - url: https://apis.comunidad.madrid/ciencia-tecnologia/japi-alumnos-test
+    description: Entorno de producción
+tags:
+  - name: alumnos
+    description: Recurso alumnos
+  - name: alumnos-resumen
+    description: Recurso resumen de alumnos, sus notas y asignaturas
+  - name: notas
+    description: Notas de los alumnos
+  - name: asignaturas
+    description: Asignaturas de los alumnos
+  - name: direcciones
+    description: Direcciones de los alumnos
+  - name: solicitudes-becas
+    description: Solicitudes de becas de los alumnos
+  - name: ejemplos
+    description: Ejemplos
+  - name: monitorización
+    description: Etiqueta a aplicar al endpoint /status
+paths:
+##################################################################
+# Operacion GET /alumnos/me
+##################################################################
+  /alumnos/me:
+    get:
+      summary: Devuelve los datos del Alumno identificado por el token de usuario
+      description: |
+        Devuelve los datos del Alumno, con su dirección y asignaturas
+        La direccion y asignatura se mostrarán con el parámetro $expand
+        Se pueden usar los parámetros $select, $exclude y $expand
+        También el parámetro personalizado id_alumno para filtrar un alumno concreto
+        ### Este endpoint es un ejemplo de
+        - Un GET de un recurso devolviendo unicammente los datos del usuario identificado con el token de usuario
+        - En la respuesta hay dos campos generados que no están en la tabla
+          - edad, que se calcula en base al campo fecha_nacimiento
+          - numero_asignaturas_aprobadas, que se calcula con una query
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos
+##################################################################
+  /alumnos/{uuid_alumno}:
+    get:
+      summary: Devuelve un alumno
+      description: |
+        Devuelve un alumno, con su dirección y asignaturas
+        La direccion y asignatura se mostrarán con el parámetro $expand
+        Se pueden usar los parámetros $select, $exclude y $expand
+        También el parámetro personalizado id_alumno para filtrar un alumno concreto
+        ### Este endpoint es un ejemplo de
+        - Un GET normal de un recurso con parámetros estándar
+        - En la respuesta hay dos campos generados que no están en la tabla
+          - edad, que se calcula en base al campo fecha_nacimiento
+          - numero_asignaturas_aprobadas, que se calcula con una query
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion PUT /alumnos/{id}
+##################################################################
+    put:
+      summary: Modifica un alumno, su dirección o asignaturas
+      description: |
+        Permite modificar un alumno, su dirección o asignaturas.
+        ### códigos de error del método:
+        | código | Error |
+        | -- | -- |
+        | 2xxx | Pendiente |
+        ### Este endpoint es un ejemplo de
+        - PUT normal de un recurso
+        - En este caso se pueden modificar los datos del alumno, así como la dirección y asignaturas asociadas por médio de sus id's (id_direccion e asignaturas_id)
+        - Dado que el POST crea un alumno sin asignaturas es con el PUT como se pueden añadir asignaturas al alumnos
+        - Validación de negocio - Una asignatura no puede tener más de 5 alumnos, por lo que al añadir una asignatura se hace esta comprobación
+        - El NIF no se ha incluido de forma deliberada, porque no queremos que se pueda modificar
+      tags:
+      - alumnos
+      requestBody:
+        $ref: '#/components/requestBodies/put_alumno_body_param'
+      parameters:
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion DELETE /alumnos/{id}
+##################################################################
+    delete:
+      summary: Elimina un alumno (baja lógica)
+      description: |
+        Hace una baja lógica de un alumno.
+        ### Este endpoint es un ejemplo de:
+        - DELETE lógico de un recurso porque existe el campo FC_BAJA_FILA
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      responses:
+        200:
+          $ref: '#/components/responses/standard_delete_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion PUT /alumnos/{uuid_alumno}/completo
+##################################################################
+  /alumnos/{uuid_alumno}/completo:
+    put:
+      summary: Modifica un alumno incluyendo su información completa
+      description: |
+        Permite modificar la información completa de un alumno. A diferencia del recurso anterior (no completo), este permite modificar la información derivada del mismo: los datos de su dirección y la de su tutor, así como de las asignaturas.
+        ### códigos de error del método:
+        | código | Error |
+        | -- | -- |
+        | 2xxx | Pendiente |
+        ### Este endpoint es un ejemplo de
+        - PUT normal de un recurso
+        - En este caso se pueden modificar no sólo los datos básicos del alumno, si no también los propios datos asociados: de las direcciones (la del alumno y la de su tutor) y de las asignaturas. (En el ejemplo *no* completo sólo se podían asociar/desasociar estas propiedades por medio de sus id's)
+        - Dado que el POST crea un alumno sin asignaturas es con el PUT como se pueden añadir asignaturas al alumnos
+        - Validación de negocio - Una asignatura no puede tener más de 5 alumnos, por lo que al añadir una asignatura se hace esta comprobación
+        - El NIF no se ha incluido de forma deliberada, porque no queremos que se pueda modificar
+      tags:
+      - alumnos
+      requestBody:
+        $ref: '#/components/requestBodies/post_put_alumno_completo_body_param'
+      parameters:
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos
+##################################################################
+  /alumnos:
+    get:
+      summary: Devuelve una colección de alumnos
+      description: |
+        Devuelve una lista de alumnos, con su dirección y asignaturas
+        La direccion y asignatura se mostrarán con el parámetro $expand
+        Se pueden usar los parámetros estándar $init, $limit, $total, $select, $exclude, $expand y $orderby
+        También el parámetro personalizado id_alumno para filtrar un alumno concreto
+        ### Este endpoint es un ejemplo de
+        - Un GET normal de un recurso con parámetros estándar
+        - En la respuesta hay dos campos generados que no están en la tabla
+          - edad, que se calcula en base al campo fecha_nacimiento
+          - numero_asignaturas, de cada alumno, que se calcula con una query
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      - $ref: '#/components/parameters/curso_query_param'
+      - $ref: '#/components/parameters/edad_query_param'
+      responses:
+        206:
+          $ref: '#/components/responses/alumnos_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+    post:
+      summary: Crea un recurso alumno
+      description: |
+        Da de alta un alumno.
+        ### Códigos de error del método:
+        | código | Error |
+        | -- | -- |
+        |2001|Fecha de nacimiento incorrecta. Valores válidos del año 1900 al actual|
+        |2004|NIF no válido
+        ### Este endpoint es un ejemplo de
+        - POST normal de un recurso
+        - Validaciones personalidadas (NIF, o Fecha) que se tienen que hacer a mano
+        - Siempre hay que indicar los posibles errores de negocio en el Swagger
+        - En los reponses de las direcciones se calcula a mano los literales de provincia y municpio
+        - En este ejemplo en el POST se crea el alumno sin asignaturas. Si se quieren añadir asignaturas al alumno se hará con el PUT
+      tags:
+      - alumnos
+      requestBody:
+        $ref: '#/components/requestBodies/post_alumno_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        201:
+          $ref: '#/components/responses/post_alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST /alumnos/completo
+  /alumnos/completo2:
+    post:
+      summary: Crea un alumno incluyendo su información completa
+      description: |
+        Permite dar de alta un alumno a la vez que asignaturas y direcciones
+        ### Códigos de error del método:
+        | código | Error |
+        | -- | -- |
+        | 2xxx | Pendiente |
+        ### Este endpoint es un ejemplo de
+        - POST dando de alta, alumnos, asignaturas, y direcciones
+      tags:
+      - alumnos
+      requestBody:
+        $ref: '#/components/requestBodies/post_put_alumno_completo_body_param'
+      parameters:
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos/excel
+##################################################################
+  /alumnos/excel:
+    get:
+      summary: Devuelve un excel (xlsx) con un listado de alumnos
+      description: |
+        Devuelve una lista de alumnos en excel
+        ### Este endpoint es un ejemplo de
+        - Generación y devolución de un excel de un excel formato xlsx
+        - Se usará Apache Poi para la implementación
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      responses:
+        200:
+          description: Archivo PDF firmado con las notas
+          headers:
+            x-trace-id:
+              description: Cabecera de rastreo de petición
+              schema:
+                type: string
+          content:
+            # Es posible, y necesario, especificar todos los posibles formatos de respuesta (salida)
+            # Siempre que devolvamos simplemente el fichero en su formato original, debe especificarse
+            # como schema de respuesta un string con formato binary. Esto es una norma en OpenAPI 3.
+            #
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST(GET) /alumnos/get
+##################################################################
+  /alumnos/get:
+    post:
+      summary: Devuelve una colección de alumnos con filtro estándar.
+      description: |
+        Permite obtener una colección de alumnos permitiendo filtrar con $filter
+        Permite usar $select, $exclude, $expand
+        Permite usar $init, $limit, $total, $order
+        Permite usar $filter
+        ### Este endpoint es un ejemplo de
+        - Búsqueda normal de un recurso con parámetros estándar y filtro estándar. El parámetro $filter siempre se pasará en el body por seguridad
+      tags:
+      - alumnos
+      requestBody:
+        $ref: '#/components/requestBodies/standard_filter_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      responses:
+        206:
+          $ref: '#/components/responses/alumnos_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos/by-uuid/{uuid}
+# No se puede poner /alumnos/{uuid} porque da error de que
+# el parámetro {id} del put y del post no es equivaliente al {uuid}
+# ya que uno es integer y otro string
+#
+##################################################################
+  /alumnos/{uuid_alumno}/datos-publicos:
+    get:
+      summary: Devuelve los datos básicos de un alumno por su uuid
+      description: |
+        Este recurso será de acceso público.
+        Se deberá conocer el uuid del alumno para poder consultarlo
+        Permite usar $select, $exclude, $expand
+        > _En un caso real se valorará si tanto el recurso como los datos que se muestran se deben poner en un recurso público, incluso aunque a este se acceda por UUID_
+        Este recurso es un ejemplo de
+        - Un método de un recurso que no devuelve exactamente los mismos datos que otros recursos. Es decir no se devuelven todos los datos del alumno sino los que consideramos (en este negocio) que no son sensibles
+        - Implementación de un recurso que no tiene seguridad. Hay que tener cuidado con con los datos que se pasan y los que devuelve (en este caso no se busca por id que podría ser secuencia sino por uuid que es un número imposible de probar secuencialmente)
+        - Ejemplo de auditoría de protección de datos para un recurso publico (En el username del fichero de auditoría, ya que no tendremos quien es el usuario que consulta, se pondrá la ip del que consulta)
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      responses:
+        200:
+          $ref: '#/components/responses/alumno_datos_publicos_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos/uuid/{uuid}
+##################################################################
+  /asignaturas/{id_asignatura}/alumnos:
+    get:
+      summary: Devuelve los alumnos de una asignatura
+      description: |
+        Devuelve la lista de alumnos de una asignatura pasando como parámetro el id de la asignatura
+        ### Este endpoint es un ejemplo de
+        - Consulta de un recurso anidado dentro de otro
+      tags:
+      - alumnos
+      parameters:
+      - $ref: '#/components/parameters/id_asignatura_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      responses:
+        206:
+          $ref: '#/components/responses/alumnos_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST(GET) /alumnos-resumen/get
+##################################################################
+  /alumnos-resumen/get:
+    post:
+      summary: Obtención del resumen de alumnos y notas por asignatura y año
+      description: |
+        Devuelve el array alumnos-resumen con los siguientes datos. Por cada asignatura y año los siguientes campos
+        - Número de presentados a esa asignatura
+        - Número de aprobados
+        - Número de suspendidos
+        - Nota media de los presentados
+        - Nota máxima de los presentados
+        - Nota mínima de los presentados
+        ### Este endpoint es un ejemplo de
+        - Devolución de una vista que está en una vista de BBDD
+        - Paso de parámetros opcionales en la queryString
+        - Normativa de nombres diferentes en uri y body o response devuelvo (alumnos-resumen en el nombre del recurso y alumnos_resumen en el response)
+        - Devolución de datos float
+        - Hay parámetros de consulta en la url (para facilitar) además del parametro estándar $filter
+        - Se ha quitado el $expand porque no tiene sentido ya que no hay recursos anidados
+      tags:
+      - alumnos-resumen
+      requestBody:
+        $ref: '#/components/requestBodies/standard_filter_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/id_asignatura_query_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      responses:
+        206:
+          $ref: '#/components/responses/alumnos_resumen_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /alumnos/{id_alumno}/notas
+##################################################################
+  /alumnos/{uuid_alumno}/notas:
+    get:
+      summary: Devuelve un PDF firmado con las notas del alumno
+      description: |
+        Devuelve un PDF firmado por la Comunidad de Madrid con las notas de un alumno
+        Sólo se podrá pedir el PDF si el alumno tiene 2 o menos asignaturas suspendidas
+        ### Errores de negocio de este endpoint
+        |Código|Error|
+        | -- | -- |
+        |2003|Su NIF no coincide con el del alumno del que está solicitando las notas
+        ### Este endpoint es un ejemplo de
+        - Devolucion de un PDF desde un recurso. Fijarse en el nuevo parámetro produces
+        - Devolución en este caso de los errores como Json
+        - Negocio (Sólo se podrá pedir el PDF si el alumno tiene 2 o menos asignaturas suspendidas)
+        - Seguridad de negocio. Se mirará el perfil del usuario del token JWT de quien hace la peticion. Si es perfil_1 (alumno) solo podrá descargar el pdf de notas si el NIF del usuario del token es igual que el NIF del alumno del que vamos a pedir las notas
+      tags:
+      - notas
+      parameters:
+      - $ref: '#/components/parameters/uuid_alumno_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          description: Archivo PDF firmado con las notas
+          headers:
+            x-trace-id:
+              description: Cabecera de rastreo de petición
+              schema:
+                type: string
+            Location:
+              description: Ubicación del recurso
+              schema:
+                type: string
+                format: uriasignatu
+          content:
+            # Es posible, y necesario, especificar todos los posibles formatos de respuesta (salida)
+            # Siempre que devolvamos simplemente el fichero en su formato original, debe especificarse
+            # como schema de respuesta un string con formato binary. Esto es una norma en OpenAPI 3.
+            #
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST /asignaturas
+##################################################################
+#############################################
+  /asignaturas:
+    post:
+      summary: Alta de una asignatura
+      description: |
+        Alta de una asignatura
+      tags:
+      - asignaturas
+      requestBody:
+        $ref: '#/components/requestBodies/post_put_asignatura_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/cabecera_numero_1_param'
+      responses:
+        201:
+          $ref: '#/components/responses/post_asignatura_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /asignaturas/{id}
+##################################################################
+  /asignaturas/{id_asignatura}:
+    get:
+      summary: Devuelve una asignatura por su id
+      description: |
+        Devuelve una asignatura
+        Permite usar $select, $exclude, $expand
+        ### Este endpoint es un ejemplo de
+        - Un recurso con solo dos endpoints de consulta básicos
+        - Los datos del profesor en la tabla están "en plano", pero swagger el profesor es un objeto anidado
+      tags:
+      - asignaturas
+      parameters:
+      - $ref: '#/components/parameters/id_asignatura_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/cabecera_numero_2_param'
+      - $ref: '#/components/parameters/querystring_numero_1_param'
+      - $ref: '#/components/parameters/querystring_numero_2_param'
+      responses:
+        200:
+          $ref: '#/components/responses/asignatura_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion PUT /asignaturas/{id}
+##################################################################
+    put:
+      summary: Mofifica una asignatura por su id
+      description: |
+        Modifica una asignatura
+      tags:
+      - asignaturas
+      requestBody:
+        $ref: '#/components/requestBodies/post_put_asignatura_body_param'
+      parameters:
+      - $ref: '#/components/parameters/id_asignatura_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/cabecera_numero_1_param'
+      - $ref: '#/components/parameters/querystring_numero_1_param'
+      responses:
+        200:
+          $ref: '#/components/responses/asignatura_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion DELETE /asignaturas/{id}
+##################################################################
+    delete:
+      summary: Elimina una asignatura por su id (borrado real de registro en BD)
+      description: |
+        Elimina una asignaturas.
+        La respuesta indluye el "id" de la asignatura, no el "uuid" (ya que las asignaturas no tienen uuid). Se muesta en el ejemplo 2.
+      tags:
+      - asignaturas
+      parameters:
+      - $ref: '#/components/parameters/id_asignatura_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/cabecera_numero_1_param'
+      responses:
+        200:
+          $ref: '#/components/responses/standard_delete_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST(GET) /asignaturas/get
+##################################################################
+  /asignaturas/get:
+    post:
+      summary: Devuelve una lista de asignaturas
+      description: |
+        Devuelve una lista de asignaturas
+        Permite usar $select, $exclude, $expand
+        Permite usar $init, $limit, $total, $order
+        Permite usar $filter
+        ### Este endpoint es un ejemplo de
+        - un recurso con solo dos endpoints de consulta básicos
+        - Los datos del profesor en la tabla están "en plano", pero swagger el profesor es un objeto anidado
+      tags:
+      - asignaturas
+      requestBody:
+        $ref: '#/components/requestBodies/standard_filter_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      - $ref: '#/components/parameters/cabecera_numero_2_param'
+      responses:
+        206:
+          $ref: '#/components/responses/asignaturas_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /direcciones/{id}
+##################################################################
+  /direcciones/{id_direccion}:
+    get:
+      summary: Devuelve una dirección por su id
+      description: |
+        Devuelve una dirección
+        Permite usar $select, $exclude, $expand
+        ### Este endpoint es un ejemplo de
+        - un recurso con solo dos endpoints de consulta básicos
+      tags:
+      - direcciones
+      parameters:
+      - $ref: '#/components/parameters/id_direccion_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      responses:
+        200:
+          $ref: '#/components/responses/direccion_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST(GET) /direcciones/get
+##################################################################
+  /direcciones/get:
+    post:
+      summary: Devuelve una lista de direcciones
+      description: |
+        Devuelve una lista de direcciones
+        Permite usar $select, $exclude, $expand
+        Permite usar $init, $limit, $total, $order
+        Permite usar $filter
+        ### Este endpoint es un ejemplo de
+        - un recurso con solo dos endpoints de consulta básicos
+      tags:
+      - direcciones
+      requestBody:
+        $ref: '#/components/requestBodies/standard_filter_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      - $ref: '#/components/parameters/standard_init_param'
+      - $ref: '#/components/parameters/standard_limit_param'
+      - $ref: '#/components/parameters/standard_total_param'
+      - $ref: '#/components/parameters/standard_order_by_param'
+      responses:
+        206:
+          $ref: '#/components/responses/direcciones_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /municipios/{id_provincia}/{id_municipio}
+##################################################################
+  /municipios/{id_provincia}/{id_municipio}:
+    get:
+      summary: Devuelve un municipio dado su idProvincia e idMunicipio
+      description: |
+        Devuelve un municipio (de una provincia)
+        Permite usar $select, $exclude, $expand
+        ### Este endpoint es un ejemplo de
+        - un recurso con un identificador de dos campos string
+      tags:
+      - direcciones
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/id_provincia_param'
+      - $ref: '#/components/parameters/id_municipio_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      responses:
+        200:
+          $ref: '#/components/responses/municipios_id_provincia_id_municipio_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST /solicitudes-becas
+##################################################################
+  /solicitudes-becas:
+    post:
+      summary: Crea una solicitud de beca
+      description: |
+        Da de alta una solicitud de beca de un alumno
+        Para subir los adjuntos de la solicitud usar con /solicitudes-becas/adjunto/{idAdjunto}
+        ### Errores de negocio de este endpoint
+        |Código|Error|
+        | -- | -- |
+        |2002|Sólo puede dar de alta o consultar una solicitud o adjunto si usted dio de alta esa solicitud
+        ### Este endpoint es un ejemplo de
+        - Un recurso que incluye documentos adjuntos  y que se suben los datos del recurso, y del fichero adjunto por separado
+        - Una logica de negocio. En este caso se guardará el NIF de quien hace el atla (obteniendolo del token jwt, no se pasa como parámetro), em el campo "NIF_PRESENTANTE"
+      tags:
+      - solicitudes-becas
+      requestBody:
+        $ref: '#/components/requestBodies/post_put_solicitud_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        201:
+          $ref: '#/components/responses/post_solicitud_beca_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /solicitudes-becas/{id}
+##################################################################
+  /solicitudes-becas/{id_solicitud_beca}:
+    get:
+      summary: Devuelve una solicitud de una beca
+      description: |
+        Devuelve una solicitud de beca de un alumno a partir del id de solicitud
+        Para consultar los adjuntos de la solicitud usar /solicitudes-becas/adjunto/{idAdjunto}
+        ### Errores de negocio de este endpoint
+        |Código|Error|
+        | -- | -- |
+        |2002|Sólo puede dar de alta o consultar una solicitud o adjunto si usted dio de alta esa solicitud
+        ### Este endpoint es un ejemplo de
+        - Un recurso que incluye documentos adjuntos  y que se suben los datos del recurso, y del fichero adjunto por separado
+        - Seguridad de negocio - Si el usuario del token tiene perfil 1 (Alumno) el NIF de ese usuario (el alumno que consulta) tiene que ser el mismo que el NIF de quien dio el alta la solicitud asociada al adjunto - NIF_PRESENTANTE
+      tags:
+      - solicitudes-becas
+      parameters:
+      - $ref: '#/components/parameters/id_solicitud_beca_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/standard_select_param'
+      - $ref: '#/components/parameters/standard_exclude_param'
+      - $ref: '#/components/parameters/standard_expand_param'
+      responses:
+        200:
+          $ref: '#/components/responses/solicitud_beca_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion POST /solicitudes-becas/{id_solicitud_beca}/adjunto
+##################################################################
+  /solicitudes-becas/{id_solicitud_beca}/adjuntos:
+    post:
+      summary: Adjunta un fichero a una solicitud
+      description: |
+        Sube un fichero para adjuntarlo a una solicitud
+        ### Errores de negocio de este endpoint
+        |Código|Error|
+        | -- | -- |
+        |2002|Sólo puede dar de alta o consultar una solicitud o adjunto si usted dio de alta esa solicitud
+        ### Este endpoint es un ejemplo de
+        - Subida de un fichero y asociación con otro recurso
+        - Se sube un fichero y se devuelve un json con la información
+        - Almacenamiento en FICA
+        - Asociar el idFica a una solicitud, y la fecha
+        - Devolver los datos del fichero adjunto (no el fichero subido)
+        - Seguridad de negocio. Si el usuario del token tiene perfil 1 (Alumno) el NIF de ese usuario (el alumno que consulta) tiene que ser el mismo que el NIF de quien dio el alta la solicitud asociada al adjunto NIF_PRESENTANTE
+      tags:
+      - solicitudes-becas
+      requestBody:
+        $ref: '#/components/requestBodies/post_adjunto_body_param'
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      - $ref: '#/components/parameters/id_solicitud_beca_param'
+      responses:
+        201:
+          $ref: '#/components/responses/post_adjunto_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /solicitudes-becas/adjunto
+##################################################################
+  /solicitudes-becas/{id_solicitud_beca}/adjuntos/{id_adjunto}:
+    get:
+      summary: Devuelve el fichero adjunto a una solicitud
+      description: |
+        Devuelve el fichero adjunto a una solicitud buscándolo por su id
+        ### Errores de negocio de este endpoint
+        |Código|Error|
+        | -- | -- |
+        |2002|Sólo puede dar de alta o consultar una solicitud o adjunto si usted dio de alta esa solicitud
+        ### Este endpoint es un ejemplo de
+        - Descarga de un fichero cogiendolo de fica
+        - Seguridad de negocio. Si el usuario del token tiene perfil 1 (Alumno) el NIF de ese usuario (el que consulta) tiene que ser el mismo que el NIF de quien dio el alta la solicitud asociada al adjunto - NIF_PRESENTANTE
+      tags:
+      - solicitudes-becas
+      parameters:
+      - $ref: '#/components/parameters/id_solicitud_beca_param'
+      - $ref: '#/components/parameters/id_adjunto_param'
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          description: Solicitud encontrada y adjunto obtenido correctamente
+          content:
+            # Es posible, y necesario, especificar todos los posibles formatos de respuesta (salida)
+            # Siempre que devolvamos simplemente el fichero en su formato original, debe especificarse
+            # como schema de respuesta un string con formato binary. Esto es una norma en OpenAPI 3.
+            #
+            # .pdf
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+
+##################################################################
+# Operacion POST /files
+##################################################################
+  # Recurso de subida de ficheros proporcionado generado en la API por defecto.
+  # El recurso definido aquí es una propuesta de cómo debería implementarse.
+  # No obstante dicha implementación dependerá de los sistemas usados por la API.
+  # En cualquier caso debe ajustarse la definición a la implementación final,
+  # siendo conveniente definir la misma antes de llevarla a cabo.
+  /files:
+    post:
+      summary: Endpoint de subida de ficheros
+      description: |
+        Sube un fichero.
+        ### Hay dos formas de subida de fichero, que implican dos modelos de llamada.
+        Además de estos dos modelos de llamada, hay dos tipos de guardado, el guardado compartido y el temporal, por lo que en total se tienen 4 casos posibles.
+        ### Las formas de subida son:
+        1 - Subida de un fichero en el body, en base 64, aplicable a ficheros pequeños. Produce y consume application/json.
+        2 - Subida de un fichero particionado (en chunks), aplicado a ficheros grandes. Produce application/json y consume multipart/form.
+        En el caso de la segunda llamada, el modelo para la primera llamada (inicio del proceso de subida), y el resto (subida de un chunk mayor que uno) varían.
+        Notar que los parámetros listados en la sección parameters se corresponden con los de las dos llamadas.
+        ----
+        A continuación se muestran llamadas de ejemplo.
+        ### 1 - Subida de un fichero en base 64 (fichero pequeño)
+        POST - /files
+        Body
+        {
+          "base64" - "(fichero en base 64)",
+          "filename" - "imagen_prueba.jpg",
+          "storage_type" - "COMPARTIDO"
+        }
+        Subirá el fichero como imagen_prueba.jpg en el directorio compartido.
+        ----
+        ### 2 - Subida de un fichero por chunks (ficheros grandes), primera llamada
+        POST - /files
+        Form-data
+        file - (chunk)
+        filename - test.jpg
+        chunk - 1
+        chunks - 2
+        ----
+        ### 3 - Subida de un fichero por chunks (ficheros grandes), llamadas consecuentes
+        POST - /files
+        Form-data
+        file - (chunk)
+        file_id - uf_xxxxxxxxx
+        chunk - 2
+        chunks - 2
+      tags:
+      - ejemplos
+      requestBody:
+        $ref: '#/components/requestBodies/post_file_body_param'
+      responses:
+        201:
+          $ref: '#/components/responses/file_creation_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+  /files/{id_file}:
+    get:
+      summary: Endpoint de descarga de ficheros
+      description: |
+        Descarga el fichero asociado al identificador proporcionado.
+        Se puede especificar el tipo de respuesta a obtener, que por defecto será application/octet-stream.
+        Por ejemplo, si se quiere descargar un pdf, se puede proporcionar el tipo application/pdf de forma que el pdf descargado podrá ser abierto directamente por un navegador.
+      tags:
+      - ejemplos
+      parameters:
+      - $ref: '#/components/parameters/id_file_param'
+      - $ref: '#/components/parameters/storage_type_param'
+      - $ref: '#/components/parameters/file_name_query_param'
+      - $ref: '#/components/parameters/mime_type_query_param'
+      responses:
+        200:
+          description: Se devuelve el fichero a descargar
+          content:
+            # Es posible, y necesario, especificar todos los posibles formatos de respuesta (salida)
+            # Siempre que devolvamos simplemente el fichero en su formato original, debe especificarse
+            # como schema de respuesta un string con formato binary. Esto es una norma en OpenAPI 3.
+            #
+            # .pdf
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+            # .json (con fichero en base64)
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/standard_response'
+                  - properties:
+                      data:
+                        $ref: '#/components/schemas/file'
+              examples:
+                Ejemplo 1:
+                  $ref: '#/components/examples/file_response_example'
+            # .doc .dot
+            application/msword:
+              schema:
+                type: string
+                format: binary
+            # .docx
+            application/vnd.openxmlformats-officedocument.wordprocessingml.document:
+              schema:
+                type: string
+                format: binary
+            # .xls .xlt .xla
+            application/vnd.ms-excel:
+              schema:
+                type: string
+                format: binary
+            # .xlsx
+            application/vnd.openxmlformats-officedocument.spreadsheetml.sheet:
+              schema:
+                type: string
+                format: binary
+            # .jpeg .jpg
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+            # .png
+            image/png:
+              schema:
+                type: string
+                format: binary
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+    delete:
+      summary: Endpoint de borrado de ficheros
+      description: |
+        Borra el fichero asociado al identificador de fichero proporcionado.
+      tags:
+      - ejemplos
+      parameters:
+      - $ref: '#/components/parameters/id_file_param'
+      responses:
+        200:
+          $ref: '#/components/responses/standard_delete_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+  /files/file-id:
+    get:
+      summary: Genera un identificador de fichero
+      description: |
+        Genera un identificador de fichero que puede ser usado al subir un nuevo fichero, para que tenga este id proporcionado.
+      tags:
+      - ejemplos
+      responses:
+        200:
+          description: Estado correcto de la aplicación
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/standard_response'
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          file_id:
+                            type: string
+                            example: uf_670b9562-b30d-52d5-b827-655787665500
+              examples:
+                Ejemplo 1:
+                  $ref: '#/components/examples/file_id_response_example'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+  /users-info/me:
+    get:
+      summary: Información del usuario
+      description: |
+        Obtiene la información del usuario que realiza la petición, a partir de su token JWT
+      tags:
+      - ejemplos
+      responses:
+        200:
+          $ref: "#/components/responses/user_info_response"
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        404:
+          $ref: '#/components/responses/standard_not_found_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+##################################################################
+# Operacion GET /status
+##################################################################
+  # Recurso de implementación obligatoria para monitorización de la API
+  # El recurso definido aquí es una propuesta de cómo debería implementarse.
+  # No obstante dicha implementación dependerá de los sistemas usados por la API.
+  # En cualquier caso debe ajustarse la definición a la implementación final,
+  # siendo conveniente definir la misma antes de llevarla a cabo.
+  /status:
+    get:
+      summary: Endpoint de monitorización de la API
+      description: |
+        Recurso obligatorio en todos los APIs de la Comunidad de Madrid.
+        - Indicará el estado del API en el objeto result. Si result.status es true indicará que todo está correcto y que el API puede funcionar correctamente
+        - Mostrará algúna információn básica del backend
+        - Mostará información de los sistemas que usa o a los que se conecta mediante el array systems (Como base de datos, otros subsistemas u otros APIS que use)
+        - Este recurso es personalizable en los backends en los que se les puede añadir comprobaciones a susbistemas propios
+      tags:
+      - monitorización
+      parameters:
+      - $ref: '#/components/parameters/standard_trace_id_header_param'
+      responses:
+        200:
+          $ref: '#/components/responses/standard_status_endpoint_response'
+        400:
+          $ref: '#/components/responses/standard_bad_request_response'
+        401:
+          $ref: '#/components/responses/standard_unauthorized_response'
+        403:
+          $ref: '#/components/responses/standard_forbidden_response'
+        429:
+          $ref: '#/components/responses/standard_too_many_requests_response'
+        default:
+          $ref: '#/components/responses/standard_server_error_response'
+#
+components:
+  parameters:
+    #
+    ######################################################################
+    #       --- Parámetros estándar (NO ELIMINAR NI MODIFICAR) ---       #
+    ######################################################################
+    #
+    # Parámetro indicador del registro inicial para listados paginados.
+    standard_init_param:
+      in: query
+      name: $init
+      description: |
+        Registro inicial deseado
+        * Valor mínimo: 0
+        * Valor máximo: Número total de registros
+      schema:
+        type: integer
+        format: int32
+        default: 0
+        minimum: 0
+      example: 0
+    #
+    # Parámetro indicador del máximo de registros a devolver en un listado paginado.
+    standard_limit_param:
+      in: query
+      name: $limit
+      description: |
+        Número máximo de registros a mostrar por página
+        * Valor mínimo: 1
+      schema:
+        type: integer
+        format: int32
+        minimum: 1
+        default: 25
+      example: 25
+    #
+    # Parámetro indicador del cálculo de totales.
+    standard_total_param:
+      in: query
+      name: $total
+      description: |
+        Indica si se deben calcular y devolver los atributos _total_ y _total_pages_ en el objeto _metadata.paging_ de la respuesta estándar.
+      schema:
+        type: boolean
+        default: false
+      example: true
+    #
+    # Parámetro indicador de atributos a mostrar en la respuesta.
+    standard_select_param:
+      in: query
+      name: $select
+      description: |
+        Permite seleccionar los atributos del recurso que se desean obtener en la consulta.
+        Se recomienda su uso cuando sólo se desea obtener unos pocos atributos de un recurso complejo.
+        Puede especificarse como un array de atributos. Ver estándar de definición de APIs.
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      example: [id,nombre,tipo]
+    #
+    # Parámetro indicador de atributos a excluir de la respuesta.
+    standard_exclude_param:
+      in: query
+      name: $exclude
+      description: |
+        Permite excluir determinados atributos del recurso.
+        Se recomienda su uso cuando se desea excluir algunos atributos de un recurso complejo.
+        Puede especificarse como un array de atributos. Ver estándar de definición de APIs.
+      schema:
+        type: array
+        items:
+          type: string
+        minItems: 1
+        maxItems: 100
+      example: [id,tipo]
+    #
+    # Parámetro indicador de subatributos a expandir.
+    standard_expand_param:
+      in: query
+      name: $expand
+      description: |
+        Indica una lista de subatributos que se desea expandir.
+        Puede especificarse como un array de atributos. Ver estándar de definición de APIs.
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      example: [subcategoria,nombre_tipo]
+    #
+    # Parámetro de criterio de ordenación para listados paginados.
+    standard_order_by_param:
+      in: query
+      name: $orderby
+      description: |
+        Permite indicar los criterios de ordenación de una consulta.
+        El formato a utilizar será un signo + ó - para indicar si es
+        ascendente o descendente seguido del nombre de la columna o campo por el que se ordena.
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      example: [-date]
+    #
+    # Cabecera obligatoria de rastreo de petición.
+    standard_trace_id_header_param:
+      in: header
+      name: x-trace-id
+      description: |
+        Cabecera indicando el id de traceo de la petición.
+        Debe ser una cadena aleatoria basada en timestamp.
+      schema:
+        type: string
+        maxLength: 100
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 12345abcde
+    #
+    ####################################################################
+    #              --- Parámetros propios de la API -----              #
+    ####################################################################
+    #                                                                  #
+    #    Aquí comienzan los parámetros particulares de la API.         #
+    #    Las definiciones de los recursos van en la sección schemas.   #
+    #    Las respuestas a devolver van en la sección responses.        #
+    #                                                                  #
+    ####################################################################
+    #
+    # Parámetro uuid_alumno
+    uuid_alumno_param:
+      in: path
+      name: uuid_alumno
+      description: UUID del alumno (en el path)
+      schema:
+        $ref: '#/components/schemas/uuid'
+      required: true
+      examples:
+        Ejemplo 1:
+          value: '62977d46-7a50-41c9-8d84-38272ac2a8df'
+    # Parámetro id_alumno en la query
+    id_alumno_query_param:
+      in: query
+      name: id_alumno
+      description: Identificador del alumno a filtrar (en la query)
+      schema:
+        type: integer
+        format: int32
+      example: 1
+    # Parámetro id_asignatura
+    id_asignatura_param:
+      in: path
+      name: id_asignatura
+      description: Identificador de la asignatura a obtener (en el path)
+      schema:
+        type: integer
+        format: int32
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 1
+    # Parámetro id_asignatura en query
+    id_asignatura_query_param:
+      in: query
+      name: id_asignatura
+      description: Identificador de la asignatura a obtener (en la query)
+      schema:
+        type: integer
+        format: int32
+      example: 1
+    curso_query_param:
+      in: query
+      name: curso
+      description: Curso por el que filtrar
+      schema:
+        type: string
+        maxLength: 4
+      required: true
+      examples:
+        Ejemplo 1:
+          value: '2022'
+    edad_query_param:
+      in: query
+      name: edad
+      description: Edad por la que filtrar
+      schema:
+        type: string
+        maxLength: 2
+      examples:
+        Ejemplo 1:
+          value: '16'
+    # Parámetro id_direccion
+    id_direccion_param:
+      in: path
+      name: id_direccion
+      description: Identificador de la dirección a obtener (en el path)
+      schema:
+        type: integer
+        format: int32
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 1
+    # Parámetro id_provincia
+    id_provincia_param:
+      in: path
+      name: id_provincia
+      schema:
+        type: string
+        maxLength: 2
+      description: Identificador de la provincia
+      required: true
+    # Parámetro id_direccion
+    id_municipio_param:
+      in: path
+      name: id_municipio
+      schema:
+        type: string
+        maxLength: 3
+      description: Identificador dlel municipio
+      required: true
+    # Parámetro id_solicitud_beca
+    id_solicitud_beca_param:
+      in: path
+      name: id_solicitud_beca
+      description: Identificador de la solicitud de beca a obtener (en el path)
+      schema:
+        type: integer
+        format: int32
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 1
+    # Parámetro id_solicitud_beca en la query
+    id_solicitud_beca_query_param:
+      in: query
+      name: id_solicitud_beca
+      description: Identificador de la solicitud de beca (en la query)
+      schema:
+        type: integer
+        format: int32
+      required: true
+      example: 1
+    # Parámetro id_ajunto de una solicitud de beca
+    id_adjunto_param:
+      in: path
+      name: id_adjunto
+      description: Identificador del adjunto de una solicitud de beca (en el path)
+      schema:
+        type: integer
+        format: int32
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 1
+    # Identificador del fichero
+    id_file_param:
+      in: path
+      name: id_file
+      description: Identificador de fichero (en el path)
+      schema:
+        type: string
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 1
+    # Nombre del fichero
+    file_name_query_param:
+      in: query
+      name: file_name
+      description: Nombre a dar al fichero descargado
+      schema:
+        type: string
+      example: 'fichero'
+    # Tipo del fichero
+    mime_type_query_param:
+      in: query
+      name: mime_type
+      description: Tipo MIME a emplear en la respuesta
+      schema:
+        type: string
+      example: 'application/pdf'
+    # Tipo de almacenamiento del fichero
+    storage_type_param:
+      in: query
+      name: storage_type
+      description: Tipo de guardado
+      schema:
+        type: string
+      example: 'COMPARTIDO'
+    # Cabeceras propias de ejemplo
+    cabecera_numero_1_param:
+      in: header
+      name: cabecera_numero_1
+      description: |
+        Cabecera de prueba 1. Obligatoria
+      schema:
+        type: string
+        maxLength: 100
+      required: true
+      examples:
+        Ejemplo 1:
+          value: '12345abcde'
+    cabecera_numero_2_param:
+      in: header
+      name: cabecera_numero_2
+      description: |
+        Cabecera de prueba 2. Opcional. Con valores un ejemplo de valores permitidos
+      schema:
+        type: string
+        maxLength: 100
+        enum:
+          - valor1
+          - valor2
+          - valor3
+      examples:
+        Ejemplo 1:
+          value: '12345abcde'
+    querystring_numero_1_param:
+      in: query
+      name: query_string_1
+      description: |
+        QueryString de prueba 1. Opcional
+      schema:
+        type: string
+        maxLength: 100
+      examples:
+        Ejemplo 1:
+          value: 'valor1'
+    querystring_numero_2_param:
+      in: query
+      name: query_string_2
+      description: |
+        QueryString de prueba 2. Obligatoria
+      schema:
+        type: string
+        maxLength: 100
+      required: true
+      examples:
+        Ejemplo 1:
+          value: 'valor2'
+  #
+  schemas:
+    #
+    #########################################################################
+    #          --- Schemas estándar (NO ELIMINAR NI MODIFICAR) ---          #
+    #########################################################################
+    #
+    standard_response:
+      description: |
+        Respuesta estándar cuando un recurso devuelve un solo elemento
+        Debe usarse en los recursos que consultan o modifican un recurso por su identificador.
+        También debe usarse en las respuestas de error aunque no devuelvan datos del recurso.
+        En esta plantilla dichas respuestas son reutilizables y ya referencian este modelo.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/standard_response_result'
+      required:
+        - result
+    #
+    standard_response_with_metadata:
+      description: |
+        Respuesta estándar cuando un recurso devuelve una lista de elementos
+        Debe usarse en los recursos que devuelven listados paginados cumplimentando el objeto metadata.
+        En los errores se aplica la misma política que en los endpoints que devuelven un solo recurso.
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/standard_response_result'
+        - $ref: '#/components/schemas/standard_response_metadata'
+      required:
+        - result
+    #
+    standard_response_result:
+      description: |
+        Objeto result que tienen que devolver todos los recursos, correctos o incorrectos.
+        Los campos que SIEMPRE se devolverán en este objeto son status, http_code y trace_id.
+        El uso del resto de campos está descrito brevemente en sus propias descripciones, pero debe
+        consultarse el estándar de definición de APIs de MD para más información.
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            status:
+              type: boolean
+              description: Resultado de éxito o error de la operación
+              example: true
+            http_code:
+              type: integer
+              format: int32
+              description: Código http de la respuesta.
+              example: 200
+            info:
+              type: string
+              description: Breve mensaje indicando si la operación fue exitosa o no.
+              example: Solicitud realizada con éxito.
+            errors:
+              type: array
+              description: Array de errores. Opcional. Se usará cuando se haya producido al menos un error, pudiéndose especificar tódos los que se hayan producido.
+              items:
+                $ref: '#/components/schemas/standard_error'
+            stack_trace:
+              type: array
+              description: Array que recoge los errores en caso de que sea necesario facilitar la depuración. Solo se incluirá en el entorno de desarrollo.
+              items:
+                type: object
+                properties:
+                  methodName:
+                    type: string
+                    description: Método
+                    example: 'readJavaType'
+                  fileName:
+                    type: string
+                    description: Nombre del archivo
+                    example: 'archivo.java'
+                  lineNumber:
+                    type: integer
+                    format: int32
+                    description: Número de línea
+                    example: 36
+                  className:
+                    type: string
+                    description: Clase
+                    example: 'org.springframework.http.converter.json.AbstractJackson2HttpMessageConverter'
+                  nativeMethod:
+                    type: boolean
+                    description: Método nativo
+                    example: false
+            trace_id:
+              type: string
+              description: Identificador de la petición en el sistema de logging para facilitar la depuración de errores. Contenido de la cabecera x-trace-id.
+              example: b8240028-8df4-4019-8b03-182a0a9bc88d
+            updated_elements:
+              type: integer
+              format: int32
+              description: Número de elementos borrados o modificados cuando se reciben llamadas con métodos PUT o DELETE sobre varios recursos. Obligatorio para borrados lógicos.
+              example: 0
+          required:
+          - status
+          - http_code
+          - trace_id
+    #
+    standard_response_metadata:
+      description: |
+        Este objeto se usa en respuestas paginadas. Está incluido en el modelo de respuesta estándar con metadatos
+        standard_response_with_metadata, por lo que no es necesario referenciarlo directamente.
+      properties:
+        metadata:
+          type: object
+          properties:
+            paging:
+              $ref: '#/components/schemas/standard_paging'
+    #
+    standard_error:
+      description: |
+        Modelo de error estándar a usar cuando se rellena el array de errores.
+        Ya está referenciado en la respuesta estándar.
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          description: Codigo de error devuelto por la API. Se especificarán códigos de errores controlados. En el caso de errores no controlados se especificará si es posible. De lo contrario se deberá indicar un código 500.
+          example: 1003
+        message:
+          type: string
+          description: Descripción textual del error devuelto
+          example: Atributo con valor superior al máximo
+      required:
+      - code
+      - message
+    #
+    standard_paging:
+      description: |
+        Modelo de objeto paginación usado en la respuesta estándar con metadatos.
+        Incluye la información sobre paginación y se devuelve en todas las respuestas paginadas.
+      type: object
+      properties:
+        init:
+          type: integer
+          format: int32
+          description: Registro inicial de la página.
+          example: 3
+        limit:
+          type: integer
+          format: int32
+          description: Tamaño de página.
+          example: 5
+        total:
+          type: integer
+          format: int32
+          description: Número total de registros.
+          example: 35
+        num_page:
+          type: integer
+          format: int32
+          description: Número de la página actual.
+          example: 2
+        total_pages:
+          type: integer
+          format: int32
+          description: Número total de páginas.
+          example: 7
+        links:
+          type: object
+          properties:
+            self:
+              description: Enlace a la propia página devuelta.
+              allOf:
+              - $ref: '#/components/schemas/standard_paging_link'
+            previous:
+              description: Enlace a la página previa
+              allOf:
+              - $ref: '#/components/schemas/standard_paging_link'
+            next:
+              description: Enlace a la página siguiente.
+              allOf:
+              - $ref: '#/components/schemas/standard_paging_link'
+            first:
+              description: Enlace a la primera página.
+              allOf:
+              - $ref: '#/components/schemas/standard_paging_link'
+            last:
+              description: Enlace a la última página.
+              allOf:
+              - $ref: '#/components/schemas/standard_paging_link'
+          required:
+            - previous
+            - next
+      required:
+      - init
+      - limit
+      - links
+    #
+    standard_paging_link:
+      description: Modelo de enlace referenciado en el modelo de paginación.
+      type: object
+      properties:
+        href:
+          type: string
+          description: Enlace codificado en html.
+          example: https://apis.comunidad.madrid/ciencia-tecnologia/test-api/v1/resources?$init=15&amp;$limit=5
+    #
+    standard_status_endpoint_system_object:
+      description: Modelo de objeto de sistema para el endpoint de monitorización.
+      type: object
+      properties:
+        system:
+          type: string
+          description: Nombre del sistema probado
+          example: Database
+        status:
+          type: boolean
+          description: Estado del sistema probado
+          example: true
+    #
+    standard_status_endpoint_request_object:
+      description: Modelo de objeto de petición para el endpoint de monitorización.
+      type: object
+      properties:
+        request:
+          type: string
+          description: Recurso de la API al que se ha hecho la llamada
+          example: /users
+        response:
+          type: integer
+          format: int32
+          description: Código http de la respuesta obtenida
+          example: 200
+    #
+    standard_filter_value:
+      description: |
+        Modelo de valor de objeto de filtrado.
+        Consiste en un par clave-valor que indica un criterio para realizar el filtrado.
+      type: object
+      properties:
+        property:
+          type: string
+          description: Nombre de la propiedad (columna de BBDD)
+          example: property_1
+        prop_type:
+          type: string
+          description: Tipo de dato
+          enum: [STRING, INTEGER, FLOAT, DATE, DATETIME, BOOLEAN]
+          example: STRING
+        prop_value:
+          type: string
+          description: Valor de la propiedad.
+          example: value_1
+        prop_values:
+          type: array
+          items:
+            type: string
+          description: Array de valores a usar como rango
+        $filter:
+          $ref: '#/components/schemas/standard_filter_object_base'
+    #
+    standard_filter_object:
+      type: object
+      description: |
+        Modelo de objeto de filtrado.
+        Parámetro que indica los criterios para una consulta compleja.
+        Permite realizar operaciones AND, OR, mayor o igual, substring, like, etc
+      properties:
+        operation:
+          type: string
+          description: Operación a realizar
+          example: LT
+          enum:
+            - AND
+            - OR
+            - GT
+            - LT
+            - GTEQ
+            - LTEQ
+            - EQ
+            - NEQ
+            - IN
+            - BETWEEN
+            - SUBSTRING
+            - LIKE
+            - ILIKE
+            - NLIKE
+            - REGEXP
+        values:
+          type: array
+          items:
+            $ref: '#/components/schemas/standard_filter_value'
+    #
+    standard_filter_object_base:
+      description: |
+        Este objeto permite anidar (concatenar) filtros para realizar consultas más complejas.
+        Su implementación es la misma que se refleja en la definición de standard_filter_object.
+      type: object
+      properties:
+        operation:
+          type: string
+          description: Operación a realizar
+          example: LT
+          enum:
+            - AND
+            - OR
+            - GT
+            - LT
+            - GTEQ
+            - LTEQ
+            - EQ
+            - NEQ
+            - IN
+            - BETWEEN
+            - SUBSTRING
+            - LIKE
+            - ILIKE
+            - NLIKE
+            - REGEXP
+        values:
+          type: array
+          items:
+            type: string
+            description: |
+              Este objeto es el mismo que se refleja en la definición de standard_filter_value.
+              Permite concatenar valores para el filtro. Su tipo es el mismo que dicho objeto,
+              aunque aquí esté definido como string para evitar referencias circulares.
+    #
+    # Modelo UUID para identificadores de recursos con información sensible
+    uuid:
+      description: Modelo para identificadores basados en UUID
+      type: string
+      format: uuid
+      minLength: 36
+      maxLength: 36
+      pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+      example: '62977d46-7a50-41c9-8d84-38272ac2a8df'
+    #
+
+    ######################################################################
+    #                 --- Schemas propios de la API -----                #
+    ######################################################################
+    #                                                                    #
+    #    Aquí empiezan los schemas particulares de la API.               #
+    #                                                                    #
+    #    Para cada recurso estará bien definir el objeto u objetos que   #
+    #    representan el recurso o las distinas formas de verlo.          #
+    #    (Ej. cliente)                                                   #
+    #                                                                    #
+    #    Los parámetros de recursos van en la sección 'parameters'.      #
+    #    Las respuestas van en la sección 'responses'.                   #
+    #                                                                    #
+    ######################################################################
+    #
+    #
+    # Datos del alumno
+    alumno:
+      description: |
+        Alumno con su dirección y asignaturas y algunos campos calculados que no está directamente en la tabla alumnos como edad y número de asignaturas aprobadas
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: identificador único del alumno
+          example: 27
+        uuid:
+          type: string
+          format: uuid
+          maxLength: 40
+          description: identificador hash del alumno
+          example: 'cf4a8327-f969-4415-81fb-c5346befb80c'
+        nombre_alumno:
+          type: string
+          maxLength: 30
+          description: Nombre del alumno
+          example: 'Antonio'
+        apellido_1:
+          type: string
+          maxLength: 50
+          description: Primer apellido del alumno
+          example: 'Zabala'
+        apellido_2:
+          type: string
+          maxLength: 50
+          description: Segundo apellido del alumno
+          example: 'Zubizarreta'
+        nif:
+          type: string
+          maxLength: 9
+          description: NIF del alumno
+          example: '00000001R'
+        fecha_nacimiento:
+          type: string
+          format: date
+          description: Fecha de nacimiento. Fecha ISO 8061 en formato yyyy-MM-dd
+          example: "1980-06-25"
+        fecha_inscripcion:
+          type: string
+          format: date-time
+          description: Fecha de inscripción del alumnos en el centro. Fecha ISO 8061 con hora
+          example: "2022-09-12T12:01:02"
+        edad:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 120
+          description: edad del alumno
+          example: 18
+        numero_asignaturas_aprobadas:
+          type: integer
+          format: int32
+          description: número de asignaturas en las que está aprobado el alumno
+          example: 27
+          default: 0
+        direccion_alumno:
+          allOf:
+            - $ref: '#/components/schemas/direccion_alumno'
+        direccion_tutor:
+          allOf:
+            - $ref: '#/components/schemas/direccion_tutor'
+        asignaturas:
+          type: array
+          description: asignaturas en las que está matriculado el alumno
+          items:
+              $ref: '#/components/schemas/asignatura_with_id'
+      required:
+        - id
+        - nombre_alumno
+        - apellido_1
+        - nif
+        - fecha_nacimiento
+    # Datos publicos del alumnos
+    alumno_datos_publicos:
+      description: |
+        Con los datos que no consideramos sensibles y que se muestran en el recurso de consulta por uuid. En un caso real habrá que estudiar si en estos datos se mostrarían en un recurso sin seguridad, aunque se busque por uuid.
+      type: object
+      properties:
+        nombre_alumno:
+          type: string
+          maxLength: 30
+          description: Nombre del alumno
+          example: 'Antonio'
+        apellido_1:
+          type: string
+          maxLength: 50
+          description: Primer apellido del alumno
+          example: 'Zabala'
+        apellido_2:
+          type: string
+          maxLength: 50
+          description: Segundo apellido del alumno
+          example: 'Zubizarreta'
+        edad:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 120
+          description: edad del alumno
+          example: 18
+        provincia:
+          type: string
+          maxLength: 50
+          description: Descripción de la provincia del alumno
+          example: 'Madrid'
+        municipio:
+          type: string
+          maxLength: 50
+          description: Descripción del municipio del alumno
+          example: 'Mostoles'
+        numero_asignaturas_aprobadas:
+          type: integer
+          format: int32
+          description: número de asignaturas en las que está aprobado el alumno
+          example: 27
+          default: 0
+    # Datos resumen de los alumnos
+    alumno_resumen:
+      description: |
+        Datos de una consulta de alumnos por municipio y asignatura
+        Se mostrará para estas dos agregaciones los siguientes datos
+        - numero_presentados
+        - numero_aprobados
+        - numero_suspendidos
+        - nota_media
+        - nota_maxima
+        - nota_minima
+      type: object
+      properties:
+        id_asignatura:
+          type: integer
+          format: int32
+          description: identificador único de la asignatura
+          example: 27
+        nombre_asignatura:
+          type: string
+          maxLength: 50
+          description: Nombre de la asignatura
+          example: 'Matemáticas'
+        anno_nota:
+          type: integer
+          format: int32
+          description: Año de la nota del examente
+          example: 2021
+        numero_presentados:
+          type: integer
+          format: int32
+          description: Número de alumnos presentados al examen
+          example: 27
+          default: 0
+        numero_aprobados:
+          type: integer
+          format: int32
+          description: Número de alumnos aprobados al examen
+          example: 27
+          default: 0
+        numero_suspendidos:
+          type: integer
+          format: int32
+          description: Número de alumnos suspendidos al examen
+          example: 27
+          default: 0
+        nota_media:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 10.0
+          description: Nota media de los alumnos
+          example: '7.5'
+        nota_maxima:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 10.0
+          description: Nota máxima de los alumnos
+          example: '7.5'
+        nota_minima:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 10.0
+          description: Nota mínima de los alumnos
+          example: '7.5'
+    # Datos de la asignatura
+    asignatura:
+      type: object
+      description: Asignatura con sus datos básicos
+      properties:
+        nombre_asignatura:
+          type: string
+          maxLength: 50
+          description: Nombre de la asignatura
+          example: 'Matemáticas'
+        curso:
+          type: string
+          maxLength: 4
+          description: Curso de inicio de la asignatura
+          example: '2020'
+        profesor:
+          type: object
+          description: Profesor de la asignatura
+          properties:
+            id:
+              type: integer
+              format: int32
+              description: Identificador del profesor de la asignatura
+              example: 1
+            nombre:
+              type: string
+              maxLength: 50
+              description: Nombre de profesor de la asignatura
+              example: 'Luís Martinez'
+      required:
+        - id_asignatura
+        - nombre_asignatura
+        - curso
+    # Datos de la asignatura con id (se añade el id_asignatura al schema de asignatura)
+    asignatura_with_id:
+      allOf:
+        - type: object
+          properties:
+            id_asignatura:
+              type: integer
+              format: int32
+              description: identificador único de la asignatura
+              example: 27
+        - $ref: '#/components/schemas/asignatura'
+  # Datos de la nota
+    nota:
+      type: object
+      description: |
+        Nota de cada alumno con la fecha que se le puso
+      properties:
+        id_nota:
+          type: integer
+          format: int32
+          description: identificador único de la asignatura
+          example: 1
+        id_alumno:
+          type: integer
+          format: int32
+          description: identificador del alumno de la nota
+          example: 2
+        id_asignatura:
+          type: integer
+          format: int32
+          description: identificador de la asignatura de la nota
+          example: 2
+        fecha_nota:
+          type: string
+          format: date-time
+          description: Fecha de la nota. Fecha ISO 8061 en formato yyyy-MM-ddTHH:mm:ss
+          example: "2021-01-25T11:00:00"
+        nota_asignatura:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 10.0
+          description: Nota de la asignatura
+          example: '9.5'
+    # Datos de la direccion del alumno
+    direccion_alumno:
+      type: object
+      description: |
+        Dirección que vamos a mostrar del alumno. Tendrá la pronvicia y municipio como literales y solo el nombre de la calle y numero
+      properties:
+        id_direccion:
+          type: integer
+          format: int32
+          description: identificador de la dirección
+          example: 1
+        provincia:
+          type: string
+          maxLength: 50
+          description: Descripción de la provincia del alumno
+          example: 'Madrid'
+        municipio:
+          type: string
+          maxLength: 50
+          description: Descripción del municipio del alumno
+          example: 'Mostoles'
+        calle:
+          type: string
+          maxLength: 50
+          description: Nombre de la calle
+          example: 'Paseo de la Castellana'
+        numero:
+          type: integer
+          format: int32
+          description: Numero dentro de la calle
+          example: 25
+    # Datos de la direccion del alumno
+    municipio_alumno:
+      type: object
+      description: |
+        Datos del municipio de un alumno
+      properties:
+        id_provincia:
+          type: string
+          maxLength: 2
+          description: identificador de la provincia
+          example: '28'
+        id_municipio:
+          type: string
+          maxLength: 3
+          description: identificador del municipio
+          example: '079'
+        municipio:
+          type: string
+          maxLength: 50
+          description: literal del municipio
+          example: 'Madrid'
+    # Datos de la direccion del tutor
+    direccion_tutor:
+      type: object
+      description: |
+        Dirección que vamos a mostrar del tutor. Tendrá la pronvicia y municipio como literales y solo el nombre de la calle y numero
+      properties:
+        id_direccion:
+          type: integer
+          format: int32
+          description: identificador de la dirección
+          example: 1
+        provincia:
+          type: string
+          maxLength: 50
+          description: Descripción de la provincia del alumno
+          example: 'Madrid'
+        municipio:
+          type: string
+          maxLength: 50
+          description: Descripción del municipio del alumno
+          example: 'Mostoles'
+        calle:
+          type: string
+          maxLength: 50
+          description: Nombre de la calle
+          example: 'Paseo de la Castellana'
+        numero:
+          type: integer
+          format: int32
+          description: Numero dentro de la calle
+          example: 25
+    # Datos de la solicitud de beca
+    solicitud_beca:
+      type: object
+      description: |
+        Datos de la solicitud de una beca
+      properties:
+        id_solicitud:
+          type: integer
+          format: int32
+          description: identificador de la solicitud
+          example: 1
+        id_alumno:
+          type: integer
+          format: int32
+          description: identificador del alumno que hace la solicitud
+          example: 1
+        fecha_solicitud:
+          type: string
+          format: date-time
+          description: Fecha de la nota. Fecha ISO 8061 en formato yyyy-MM-ddTHH:mm:ss
+          example: "2021-01-25T11:50:59"
+        nif_presentante:
+          type: string
+          maxLength: 9
+          description: Nif de la persona que presenta la solicitud
+          example: '000000001R'
+        tipo_solicitud:
+          type: string
+          maxLength: 1
+          description: Tipo de solicitud
+          example: 'N'
+        observaciones:
+          type: string
+          maxLength: 2600
+          description: Observaciones que pueda meter el alumno al hacer la solicitud
+          example: "Observaciones de la solicitud...."
+    # Datos del adjunto de la solicitud de beca
+    solicitud_beca_adjunto:
+      type: object
+      description: |
+        Datos del fichero subido a una solicitud de una beca
+      properties:
+        id_adjunto:
+          type: integer
+          format: int32
+          description: identificador del adjunto
+          example: 1
+        id_solicitud:
+          type: integer
+          format: int32
+          description: identificador de la solicitud a la que se anexa el adjunto
+          example: 1
+        id_fica:
+          type: string
+          description: identificador de fica del fichero subido
+          example: 12043233
+        nombre_fichero:
+          type: string
+          description: Nombre del fichero subido
+          example: "justifiante.pdf"
+        tamano_bytes:
+          type: integer
+          format: int32
+          description: Tamaño en bytes del fichero subido
+          example: 25835
+    # File
+    file:
+      description: Fichero a devolver
+      type: object
+      properties:
+        file:
+          type: string
+          format: byte
+          description: Fichero en formato Base64
+          example: 'RWplbXBsbyBkZSBmaWNoZXJvIGVuIEJhc2U2NA=='
+  requestBodies:
+    #
+    ######################################################################
+    #               --- Cuerpos de petición estándar ---                 #
+    ######################################################################
+    #
+    # IMPORTANTE: Eliminar si no se usa por no implementarse la operación.
+    standard_filter_body_param:
+      description: |
+        Parámetro de consulta de filtrado complejo a través de cuerpo de petición.
+        Se debe utilizar mediante una petición de caso especial POST como GET.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              $filter:
+                $ref: '#/components/schemas/standard_filter_object'
+          examples:
+            Ejemplo 1:
+              value:
+                "$filter": {
+                  "operation": "EQ",
+                  "values": [
+                    {
+                      "property": "property_1",
+                      "prop_type": "INTEGER",
+                      "prop_value": "7"
+                    }
+                  ]
+                }
+      required: false
+    #
+    # IMPORTANTE: Eliminar si no se usa por no implementarse la operación.
+    standard_delete_multiple_body_param:
+      description: |
+        Ejemplo de cuerpo de petición que contiene un listado de los identificadores
+        de recursos a eliminar en una operación de borrado múltiple.
+        Se debe usar en los endpoints de borrado masivo.
+        Su definición es un ejemplo, dado que los identificadores pueden ser de distinto tipo.
+        La definición de este cuerpo dependerá del recurso.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              data:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    uuid:
+                      type: string
+                      format: uuid
+                      description: UUID del recurso
+                      example: '2bd80c5a-fc3f-49a7-b79a-0c174e19aef6'
+                    id:
+                      type: integer
+                      format: int32
+                      description: Identificador del recurso
+                      example: '2bd80c5a-fc3f-49a7-b79a-0c174e19aef6'
+                description: Array con los identificadores o UUIDs de los recursos a eliminar.
+          examples:
+            Ejemplo 1:
+              value:
+                - uuid: '2bd80c5a-fc3f-49a7-b79a-0c174e19aef6'
+                - uuid: '497faaf6-5aab-425b-bb6d-a8e374c6ec98'
+      required: true
+    #
+    ######################################################################
+    #           --- Cuerpos de petición propios de la API ---            #
+    ######################################################################
+    #
+    # Parámetro fichero
+    post_adjunto_body_param:
+      description: Archivo a subir para adjuntar a la solicitud de beca
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              file:
+                type: string
+                format: binary
+          #*Si queremos especificar en qué formato pueden ir los ficheros contenidos
+          #*en este multipart/form-data, se puede hacer lo siguiente:
+          # NOTA: solo hemos incluido algunos formatos como ejemplo
+          encoding:
+            file:
+              contentType: application/pdf, application/msword, application/vnd.ms-excel
+    # En este ejemplo se han quitado del recurso alumno las propiedades
+    # id, edad y baja porque son variables generadas
+    # que no se mandan al dar de alta o modificar
+    # Se usa en
+    # - POST /alumnos
+    # Se especificará al menos una propiedad obligtoria para no permitir la creación de recursos vacíos.
+    post_alumno_body_param:
+      description: Propiedades necesarias para crear un alumno (no incluye variables derivadas)
+      content:
+        application/json:
+          schema:
+            properties:
+              nombre_alumno:
+                type: string
+                maxLength: 30
+                description: Nombre del alumno
+                example: 'Antonio'
+              apellido_1:
+                type: string
+                maxLength: 50
+                description: apellido1 del alumno
+                example: 'Perez'
+              apellido_2:
+                type: string
+                maxLength: 50
+                description: apellido2 del alumno
+                example: 'Martinez'
+              nif:
+                type: string
+                maxLength: 9
+                description: NIF del alumno
+                example: '00000001F'
+              fecha_nacimiento:
+                type: string
+                format: date
+                description: Fecha de nacimiento. Fecha ISO 8061 en formato yyyy-MM-dd
+                example: "1980-06-25"
+              fecha_inscripcion:
+                type: string
+                format: date-time
+                description: Fecha de inscripción del alumnos en el centro. Fecha ISO 8061 con hora
+                example: "2022-09-12T12:01:02"
+              id_direccion_alumno:
+                type: integer
+                format: int32
+                description: Identificador de la dirección del alumno
+                example: 1
+              id_direccion_tutor:
+                type: integer
+                format: int32
+                description: Identificador de la dirección del tutor
+                example: 1
+            required:
+              - nombre_alumno
+              - fecha_nacimiento
+              - apellido_1
+              - nif
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_alumno_body_param_example'
+      required: true
+    #
+    # En los cuerpos de peticiones con verbo PUT ninguna property debe ser obligatoria.
+    # Se usa en
+    # - PUT /alumnos/{id}
+    # La recepción de un cuerpo vacío debe dar como respuesta un código http 400, pero
+    # no se pueden especificar propiedades obligatorias dado que no es posible saber a priori
+    # cuáles de ellas se enviarán para su modificación.
+    #
+    # Body parameter del put de alumno
+    put_alumno_body_param:
+      description: Propiedades a modificar en un alumno, que *no* incluye variables derivadas, sólo sus id (id_direccion, asignaturas_ids). Para modificar las propiedades derivadas se utiliza el recurso de alumno "completo".
+      content:
+        application/json:
+          schema:
+            properties:
+              nombre_alumno:
+                type: string
+                maxLength: 30
+                description: Nombre del alumno
+                example: 'Antonio'
+              apellido_1:
+                type: string
+                maxLength: 50
+                description: primer apellido del alumno
+                example: 'Perez'
+              apellido_2:
+                type: string
+                maxLength: 50
+                description: segundo apellido del alumno
+                example: 'Martinez'
+              fecha_nacimiento:
+                type: string
+                format: date
+                description: Fecha de nacimiento. Fecha ISO 8061 en formato yyyy-MM-dd
+                example: "1980-06-25"
+              fecha_inscripcion:
+                type: string
+                format: date-time
+                description: Fecha de inscripción del alumnos en el centro. Fecha ISO 8061 con hora
+                example: "2022-09-12T12:01:02"
+              id_direccion:
+                type: integer
+                format: int32
+                description: Identificador de la dirección del alumno
+                example: 1
+              asignaturas_ids:
+                  type: array
+                  description: Array de identificadores de las asignaturas a asignar al alumno
+                  items:
+                    type: integer
+                    format: int32
+                  example: [1, 2, 3, 4]
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/put_alumno_body_param_example'
+
+    post_put_alumno_completo_body_param:
+      description: "Propiedades a modificar en un alumno (incluyendo variables derivadas: dirección de alumno, dirección de  tutor y asignaturas)"
+      content:
+        application/json:
+          schema:
+            properties:
+              nombre_alumno:
+                type: string
+                maxLength: 30
+                description: Nombre del alumno
+                example: 'Antonio'
+              apellido_1:
+                type: string
+                maxLength: 50
+                description: Primer apellido del alumno
+                example: 'Perez'
+              apellido_2:
+                type: string
+                maxLength: 50
+                description: Segundo apellido del alumno
+                example: 'Martinez'
+              fecha_nacimiento:
+                type: string
+                format: date
+                description: Fecha de nacimiento. Fecha ISO-8061 en formato yyyy-MM-dd
+                example: "1980-06-25"
+              fecha_inscripcion:
+                type: string
+                format: date-time
+                description: Fecha de inscripción del alumnos en el centro. Fecha ISO 8061 con hora
+                example: "2022-09-12T12:01:02"
+              direccion_alumno:
+                allOf:
+                - $ref: '#/components/schemas/direccion_alumno'
+              direccion_tutor:
+                allOf:
+                - $ref: '#/components/schemas/direccion_tutor'
+              asignaturas:
+                type: array
+                description: Asignaturas en las que está matriculado el alumno
+                items:
+                  $ref: '#/components/schemas/asignatura_with_id'
+            required:
+              - nombre_alumno
+              - fecha_nacimiento
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/put_alumno_completo_body_param_example'
+
+    # Body parameter del post de la solicitud
+    post_put_solicitud_body_param:
+      description: Alta o modificación de una solicitud
+      content:
+        application/json:
+          schema:
+            properties:
+              id_alumno:
+                type: integer
+                format: int32
+                description: identificador del alumno que hace la solicitud
+                example: 1
+              fecha_solicitud:
+                type: string
+                format: date-time
+                description: Fecha de la nota. Fecha ISO 8061 en formato yyyy-MM-ddTHH:mm:ss
+                example: "2021-01-25T11:50:59"
+              tipo_solicitud:
+                type: string
+                maxLength: 1
+                description: Tipo de solicitud
+                example: 'N'
+              observaciones:
+                type: string
+                maxLength: 2600
+                description: Observaciones que pueda meter el alumno al hacer la solicitud
+                example: "Observaciones de la solicitud..."
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_put_solicitud_body_param_example'
+    # Body parameter del post de file
+    post_file_body_param:
+      description: Archivo a subir (por chunks o en base64 si es pequeño)
+      content:
+        multipart/form-data:
+          schema:
+            type: object
+            properties:
+              chunk:
+                description: Índice del chunk enviado. Este parámetro sólo se usará en la subida de ficheros por chunks y se enviará como form-data.
+                type: integer
+                format: int32
+                example: 1
+              chunks:
+                description: Número total de chunks del fichero. Este parámetro sólo se usará en la subida de ficheros por chunks y se enviará como form-data.
+                type: integer
+                format: int32
+                example: 3
+              file:
+                description: Datos del chunk a subir. Este parámetro sólo se usará en la subida de ficheros por chunks y se enviará como form-data.
+                type: string
+                format: binary
+              file_id:
+                description: Identificador del fichero a crear. Este parámetro sólo se usará en la subida de ficheros por chunks y se enviará como form-data.
+                type: string
+                example: uf_670b9562-b30d-52d5-b827-655787665500
+              file_name:
+                description: Nombre del fichero a crear. Este parámetro se enviará en el body en la subida de ficheros pequeños. Se enviará como form-data en caso de subida por chunks.
+                type: string
+                example: Fichero_prueba
+              storage_type:
+                description: Tipo de guardado, puede ser TEMPORAL o COMPARTIDO. Este parámetro se enviará en el body en la subida de ficheros pequeños. Se enviará como form-data en caso de subida por chunks.
+                type: string
+                example: COMPARTIDO
+        application/json:
+          schema:
+            properties:
+              file_name:
+                type: string
+                description: Nombre del fichero a crear. Este parámetro se enviará
+                  en el body en la subida de ficheros pequeños. Se enviará como
+                  form-data en caso de subida por chunks.
+                example: Fichero_prueba
+              storage_type:
+                type: string
+                description: Tipo de guardado, puede ser TEMPORAL o COMPARTIDO.
+                  Este parámetro se enviará en el body en la subida de ficheros
+                  pequeños. Se enviará como form-data en caso de subida por chunks.
+                example: COMPARTIDO
+              base64:
+                type: string
+                description: Fichero a subir en base 64. Este parámetro sólo se
+                  usará en la subida de ficheros pequeños.
+                example: 'Q29udGVuaWRvIGRlbCBmaWNoZXJv'
+          #*Si queremos especificar en qué formato pueden ir los ficheros contenidos
+          #*en este multipart/form-data, se puede hacer lo siguiente:
+          # NOTA: solo hemos incluido algunos formatos como ejemplo
+          encoding:
+            file:
+              contentType: application/pdf, application/msword, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, image/png, image/jpeg
+  #
+  #
+  # En los cuerpos de peticiones con verbo PUT ninguna property debe ser obligatoria.
+  # Se usa en
+  # - PUT /alumnos/{id}
+  # La recepción de un cuerpo vacío debe dar como respuesta un código http 400, pero
+  # no se pueden especificar propiedades obligatorias dado que no es posible saber a priori
+  # cuáles de ellas se enviarán para su modificación.
+  #
+  # Aqui se usa una misma definición para el PUT y el POST
+  # Aunque haya parámetros required en el PUT el código generado no los tendrá en cuenta
+  # Porque por normativa de MD el PUT funciona como PUT y PATCH
+  #
+  # Body parameter del put de alumno
+    post_put_asignatura_body_param:
+      description: Propiedades a modificar una asignatura
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/asignatura'
+  responses:
+    #
+    #
+    ######################################################################
+    #     ----- Respuestas estándar (NO ELIMINAR NI MODIFICAR) -----     #
+    ######################################################################
+    #
+    # Respuesta para cualquier endpoint de eliminación de recurso individual
+    # Contiene las variables uuid e id, no siendo obligatoria ninguna.
+    # Se devolverá una, la otra, o las dos; según sea el caso.
+    standard_delete_response:
+      description: Recurso eliminado correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    type: object
+                    properties:
+                      uuid:
+                        type: string
+                        format: uuid
+                        description: UUID del recurso eliminado
+                        example: '497faaf6-5aab-425b-bb6d-a8e374c6ec98'
+                      id:
+                        type: integer
+                        format: int32
+                        description: Identificador del recurso eliminado
+                        example: 23
+          examples:
+            Ejemplo 1 (uuid):
+              $ref: '#/components/examples/standard_delete_response_example'
+            Ejemplo 2 (id):
+              $ref: '#/components/examples/standard_delete_response_example_SOLO_ID'
+    #
+    # Respuesta para endpoints de eliminación masiva de recursos
+    standard_multi_delete_response:
+      description: Recursos borrados correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+            properties:
+              data:
+                type: object
+                properties:
+                  deleted_elements:
+                    type: array
+                    items:
+                      type: string
+                    description: Array de identificadores de recursos eliminados
+                    example:
+                    - '497faaf6-5aab-425b-bb6d-a8e374c6ec98'
+                    - '5e1dd3b1-e524-43f4-beef-46b0795ebb4f'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/standard_multi_delete_response_example'
+    #
+    # Respuesta para peticiones incorrectas por parte del cliente (parámetros ausentes, erróneos, etc.)
+    standard_bad_request_response:
+      description: Petición incorrecta
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 400
+              info: 'Parámetros incorrectos'
+              trace_id: 123456abcde
+              errors:
+              - code: 1000
+                message: El atributo '%s' no puede contener un valor nulo
+              - code: 1005
+                message: El contenido del atributo '%s' ha de seguir el formato ISO 8601 para fechas sin hora
+    #
+    # Respuesta para peticiones en las que el backend autentica al cliente y este no tiene acceso al mismo.
+    standard_unauthorized_response:
+      description: No autorizado
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 401
+              info: 'No autorizado'
+              trace_id: 123456abcde
+    #
+    # Respuesta para peticiones en las que el backend autentica al cliente,
+    # y este tiene acceso a la API pero no al recurso invocado.
+    standard_forbidden_response:
+      description: Recurso prohibido
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 403
+              info: 'Recurso prohibido'
+              trace_id: 123456abcde
+    #
+    # Respuesta para peticiones en las que no se ha encontrado el recurso solicitado.
+    standard_not_found_response:
+      description: No encontrado
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 404
+              info: 'Recurso no encontrado'
+              trace_id: 123456abcde
+              errors:
+              - code: 1104
+                message: 'No se ha encontrado ningún elemento con el identificador proporcionado. Por favor, revise: %s'
+    #
+    # Respuesta a devolver en caso de que el backend controle la cuota máxima de peticiones y esta se haya rebasado.
+    # Por norma general será el API manager el que lo gestione y esta respuesta no será necesaria.
+    standard_too_many_requests_response:
+      description: Demasiadas peticiones
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 429
+              info: 'Cuota de peticiones excedida'
+              trace_id: 123456abcde
+    #
+    # Respuesta a devolver cuando se produzcan errores no controlados.
+    standard_server_error_response:
+      description: Error desconocido
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standard_response'
+          example:
+            result:
+              status: false
+              http_code: 500
+              info: 'Error desconocido'
+              trace_id: 123456abcde
+              errors:
+              - code: 2000
+                message: Mensaje de error
+    #
+    # Respuesta estándar para el endpoint /status
+    # OBLIGATORIA en todas las APIs definidas bajo el estándar de MD.
+    standard_status_endpoint_response:
+      description: Status
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+            properties:
+              data:
+                type: object
+                description: Comprobaciones realizadas cuando se recibe la llamada al endpoint de status
+                properties:
+                  systems:
+                    type: array
+                    description: Array de sistemas comprobados y resultados.
+                    items:
+                      $ref: '#/components/schemas/standard_status_endpoint_system_object'
+                  requests:
+                    type: array
+                    description: Array de enpoints llamados y resultados.
+                    items:
+                      $ref: '#/components/schemas/standard_status_endpoint_request_object'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/standard_status_endpoint_response_example'
+    #
+    ######################################################################
+    #              ----- Respuestas propias de la API -----              #
+    ######################################################################
+    #
+    # Respuesta de creación de un alumno
+    post_alumno_response:
+      description: Alumno creado con éxito
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/alumno'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_alumno_response_example'
+    #
+    # Respuesta de un alumno
+    alumno_response:
+      description: Alumno encontrado y obtenido correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/alumno'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/alumno_response_example'
+    # Respuesta de los datos del alumno
+    alumnos_response:
+      description: Lista de alumnos obtenida
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response_with_metadata'
+              - properties:
+                  data:
+                    type: object
+                    properties:
+                      alumnos:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/alumno'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/alumnos_response_example'
+    # Respuesta de los datos publicos del alumno
+    alumno_datos_publicos_response:
+      description: Alumno encontrado y obtenido correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/alumno_datos_publicos'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/alumno_datos_publicos_response_example'
+    # Respuesta del resumen del alumno
+    alumnos_resumen_response:
+      description: Lista de resumen de alumnos obtenida
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response_with_metadata'
+              - properties:
+                  data:
+                    type: object
+                    properties:
+                      alumnos_resumen:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/alumno_resumen'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/alumnos_resumen_response_example'
+
+    # Respuesta de creación de un asignatura
+    post_asignatura_response:
+      description: Asignatura creada con éxito
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/asignatura_with_id'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_asignatura_response_example'
+    # Respuesta de la asignatura
+    asignatura_response:
+      description: Asignatura obtenida correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/asignatura_with_id'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/asignatura_response_example'
+
+    # Respuesta de lista de asignaturas
+    asignaturas_response:
+      description: Lista de asignaturas obtenida correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response_with_metadata'
+              - properties:
+                  data:
+                    type: object
+                    properties:
+                      asignaturas:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/asignatura_with_id'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/asignaturas_response_example'
+
+    # Respuesta de la direccion
+    direccion_response:
+      description: Dirección obtenida correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/direccion_alumno'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/direccion_response_example'
+    # Respuesta de las direcciones
+    direcciones_response:
+      description: Lista de direcciones obtenida
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response_with_metadata'
+              - properties:
+                  data:
+                    type: object
+                    properties:
+                      direcciones:
+                        type: array
+                        items:
+                          $ref: '#/components/schemas/direccion_alumno'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/direcciones_response_example'
+    # Respuesta del municipio
+    municipios_id_provincia_id_municipio_response:
+      description: Municipio obtenido
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response_with_metadata'
+              - properties:
+                  data:
+                      $ref: '#/components/schemas/municipio_alumno'
+          example:
+              result:
+                status: true
+                http_code: 200
+                trace_id: 12345abcde
+              data:
+                id_provincia: '28'
+                id_municipio: '079'
+                municipio: 'Madrid'
+    # Respuesta de creación de solicitud de beca
+    post_solicitud_beca_response:
+      description: Solicitud dada de alta
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/solicitud_beca'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_solicitud_beca_response_example'
+    # Respuesta de la solicitud de beca
+    solicitud_beca_response:
+      description: Solicitud dada de alta
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/solicitud_beca'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/solicitud_beca_response_example'
+    # Respuesta de la solicitud de beca
+    post_adjunto_response:
+      description: Fichero subido correctamente
+      headers:
+        x-trace-id:
+          description: Cabecera de rastreo de petición
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    $ref: '#/components/schemas/solicitud_beca_adjunto'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/post_adjunto_response_example'
+    #
+    user_info_response:
+      description: Información del usuario obtenida satisfactoriamente
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    type: object
+                    description: Respuesta estándar del recurso user-info con información del usuario
+                    properties:
+                      username:
+                        type: string
+                        description: Usuario que hace la llamada
+                        example: nombreusuario
+                      nif:
+                        type: string
+                        description: NIF del usuario que hace la llamada
+                        example: '00000000A'
+                      roles:
+                        type: array
+                        description: Roles asociados al usuario que hace la llamada
+                        items:
+                          type: string
+                          example: ROLE_1
+                      user_details:
+                        type: array
+                        description: Detalles del usuario asociado
+                        items:
+                          type: object
+                          properties:
+                            key:
+                              type: string
+                              example: key
+                            value:
+                              type: string
+                              example: value
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/user_info_response_example'
+    #
+    file_creation_response:
+      description: Fichero subido correctamente
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/standard_response'
+              - properties:
+                  data:
+                    type: object
+                    description: Respuesta estándar del recurso user-info con información del usuario
+                    properties:
+                      file_id:
+                        description: Identificador del fichero
+                        type: string
+                        example: uf_670b9562-b30d-52d5-b827-655787665500
+                      path:
+                        description: Dirección al recurso
+                        type: string
+                        example: /files/123
+                      storage_type:
+                        description: Tipo de guardado empleado
+                        type: string
+                        example: TEMPORAL
+                      size_in_bytes:
+                        description: Tamaño del fichero o chunk subido
+                        type: number
+                        format: int32
+                        example: 1024
+                      percent_complete:
+                        description: Porcentaje de subida del fichero
+                        type: number
+                        format: int32
+                        example: 32
+                      last_modified_date:
+                        description: Fecha de la última modificación del fichero
+                        type: string
+                        format: date
+                        example: '1980-02-03'
+          examples:
+            Ejemplo 1:
+              $ref: '#/components/examples/file_creation_response_example'
+  #
+  examples:
+    #
+    ####################################################################
+    #                   --- Ejemplos de la API ---                     #
+    ####################################################################
+    #
+    standard_delete_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: 'Solicitud realizada con éxito'
+          trace_id: 123456abcde
+        data:
+          uuid: '5e1dd3b1-e524-43f4-beef-46b0795ebb4f'
+    #
+    standard_delete_response_example_SOLO_ID:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: 'Solicitud realizada con éxito'
+          trace_id: 123456abcde
+        data:
+          id: 1000
+    #
+    standard_multi_delete_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: 'Solicitud realizada con éxito'
+          trace_id: 123456abcde
+        data:
+          deleted_elements: ['5e1dd3b1-e524-43f4-beef-46b0795ebb4f', '4e35b5ab-7d96-4aa8-88cf-1c6e77059766', '59909623-0b85-46e2-a5f4-ca81e81e3464']
+    #
+    standard_status_endpoint_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: Solicitud realizada con éxito
+          trace_id: 12345abcde
+        data:
+          systems:
+            - system: Database
+              status: true
+          requests:
+            - request: '/usuarios'
+              response: 200
+    #
+    ######################################################################
+    #               ----- Ejemplos propios de la API -----               #
+    ######################################################################
+    #
+    post_alumno_body_param_example:
+      value:
+        nombre_alumno: 'Antonio'
+        apellido_1: 'Pérez'
+        apellido_2: 'Martínez'
+        nif: '00000001F'
+        fecha_nacimiento: '1980-06-25'
+        fecha_inscripcion: '2022-09-12T12:01:02'
+        id_direccion_alumno: 1
+        id_direccion_tutor: 1
+    #
+    put_alumno_body_param_example:
+      value:
+        nombre_alumno: 'Antonio'
+        apellido_1: 'Pérez'
+        apellido_2: 'Martínez'
+        fecha_nacimiento: '1980-06-25'
+        fecha_inscripcion: '2022-09-12T12:01:02'
+        id_direccion: 1
+        asignaturas_ids: [1, 2, 3, 4]
+    #
+    put_alumno_completo_body_param_example:
+      value:
+        nombre_alumno: 'Antonio'
+        apellido_1: 'Pérez'
+        apellido_2: 'Martínez'
+        fecha_nacimiento: '1980-06-25'
+        fecha_inscripcion: '2022-09-12T12:01:02'
+        direccion_alumno: {
+          id_direccion: 1,
+          provincia: 'Madrid',
+          municipio: 'Madrid',
+          calle: 'Alcalá',
+          numero: 11
+        }
+        direccion_tutor: {
+          id_direccion: 1,
+          provincia: 'Madrid',
+          municipio: 'Madrid',
+          calle: 'Bailen',
+          numero: 22
+        }
+        asignaturas: [
+          {
+            id_asignatura: 1,
+            nombre_asignatura: 'Algebra'
+          },
+          {
+            id_asignatura: 2,
+            nombre_asignatura: 'Biología'
+          }
+        ]
+    #
+    post_put_solicitud_body_param_example:
+      value:
+        id_alumno: 1
+        fecha_solicitud: '2021-01-25T11:50:59'
+        tipo_solicitud: 1
+        observaciones: 'Observaciones de la solicitud...'
+    #
+    post_alumno_response_example:
+      value:
+        result:
+          status: true
+          http_code: 201
+          trace_id: 12345abcde
+        data:
+          id: 1
+          nombre: 'Juan'
+          edad: 40
+          fecha_nacimiento: '1980-05-20'
+          fecha_inscripcion: '2022-09-12T12:01:02'
+          fecha_hora_alta: '2020-03-15T23:55:33+01:00'
+          tipo_alumno: 'N'
+          baja: false
+          direccion_alumno: {
+            id_direccion: 1,
+            calle: 'Alcalá',
+            numero: 11
+          }
+          direccion_tutor: {
+            id_direccion: 1,
+            provincia: 'Madrid',
+            municipio: 'Madrid',
+            calle: 'Bailen',
+            numero: 22
+          }
+          asignaturas: [
+            {
+              id_asignatura: 1,
+              nombre_asignatura: 'Algebra'
+            },
+            {
+              id_asignatura: 2,
+              nombre_asignatura: 'Botánica'
+            }
+          ]
+    #
+    alumno_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          trace_id: 12345abcde
+        data:
+          id: 1
+          nombre: 'Juan'
+          edad: 40
+          fecha_nacimiento: '1980-05-20'
+          fecha_inscripcion: '2022-09-12T12:01:02'
+          fecha_hora_alta: '2020-03-15T23:55:33+01:00'
+          tipo_alumno: 'N'
+          baja: false
+          direccion_alumno: {
+            id_direccion: 1,
+            calle: 'Alcalá',
+            numero: 11
+          }
+          direccion_tutor: {
+            id_direccion: 1,
+            provincia: 'Madrid',
+            municipio: 'Madrid',
+            calle: 'Bailen',
+            numero: 22
+          }
+          asignaturas: [
+            {
+              id_asignatura: 1,
+              nombre_asignatura: 'Algebra'
+            },
+            {
+              id_asignatura: 2,
+              nombre_asignatura: 'Botánica'
+            }
+          ]
+    #
+    alumnos_response_example:
+      value:
+        result:
+          status: true
+          http_code: 206
+          trace_id: 12345abcde
+        metadata:
+          paging:
+            init: 15
+            limit: 5
+            num_page: 3
+            total: 35
+            total_pages: 7
+            links:
+              self:
+                href: '/resources?$init=15&amp;$limit=5'
+              previous:
+                href: '/resources?$init=10&amp;$limit=5'
+              next:
+                href: '/resources?$init=20&amp;$limit=5'
+              first:
+                href: '/resources?$init=0&amp;$limit=5'
+              last:
+                href: '/resources?$init=30&amp;$limit=5'
+        data:
+          alumnos:
+            - id: 1
+              uuid: 'cf4a8327-f969-4415-81fb-c5346befb80c'
+              nombre_alumno: 'Antonio'
+              apellido_1: 'Zabala'
+              apellido_2: 'Zubizarreta'
+              fecha_nacimiento: '2001-01-21'
+              fecha_inscripcion: '2022-09-12T12:01:02'
+              edad: 30
+              numero_asignaturas_aprobadas: 0
+              direccion_alumno: {
+                id_direccion: 1,
+                provincia: 'Madrid',
+                municipio: 'Madrid',
+                calle: 'Alcalá',
+                numero: 11
+              }
+              direccion_tutor: {
+                id_direccion: 1,
+                provincia: 'Madrid',
+                municipio: 'Madrid',
+                calle: 'Bailen',
+                numero: 22
+              }
+              asignaturas: [
+                {
+                  id_asignatura: 1,
+                  nombre_asignatura: 'Algebra'
+                },
+                {
+                  id_asignatura: 2,
+                  nombre_asignatura: 'Biología'
+                }
+              ]
+            - id: 2
+              uuid: 'ff7a6468-6ab5-4d82-8666-f7eacdcfdf3e'
+              nombre_alumno: 'Beatriz'
+              apellido_1: 'Baeza'
+              apellido_2: 'Valverde'
+              fecha_nacimiento: '2002-02-22'
+              fecha_inscripcion: '2022-09-12T12:01:02'
+              edad: 19
+              numero_asignaturas_aprobadas: 0
+              direccion_alumno: {
+                id_direccion: 1,
+                provincia: 'Madrid',
+                municipio: 'Madrid',
+                calle: 'Bailen',
+                numero: 22
+              }
+              direccion_tutor: {
+                id_direccion: 1,
+                provincia: 'Madrid',
+                municipio: 'Madrid',
+                calle: 'Bailen',
+                numero: 22
+              }
+              asignaturas: [
+                  {
+                  id_asignatura: 2,
+                  nombre_asignatura: 'Biología'
+                },
+                {
+                  id_asignatura: 3,
+                  nombre_asignatura: 'Ciencias Naturales'
+                }
+              ]
+    #
+    alumno_datos_publicos_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          trace_id: 12345abcde
+        data:
+          nombre_alumno: 'Antonio'
+          apellido_1: 'Zabala'
+          apellido_2: 'Zubizarreta'
+          edad: 30
+          numero_asignaturas_aprobadas: 0
+          provincia: 'Madrid'
+          municipio: 'Madrid'
+    #
+    alumnos_resumen_response_example:
+      value:
+        result:
+          status: true
+          http_code: 206
+          trace_id: '97917506-527a-4268-823e-11a416fd086b'
+        metadata:
+          paging:
+            init: 15
+            limit: 5
+            num_page: 3
+            total: 35
+            total_pages: 7
+            links:
+              self:
+                href: '/resources?$init=15&amp;$limit=5'
+              previous:
+                href: '/resources?$init=10&amp;$limit=5'
+              next:
+                href: '/resources?$init=20&amp;$limit=5'
+              first:
+                href: '/resources?$init=0&amp;$limit=5'
+              last:
+                href: '/resources?$init=30&amp;$limit=5'
+        data:
+          alumnos_resumen:
+            - id_asignatura: 1
+              nombre_asignatura: 'Algebra'
+              anno_nota: '2021'
+              numero_presentados: 30
+              numero_aprobados: 25
+              numero_suspendidos: 5
+              nota_media: 7.5
+              nota_maxima: 9.2
+              nota_minima: 3.0
+            - id_asignatura: 1
+              nombre_asignatura: 'Biología'
+              anno_nota: '2021'
+              numero_presentados: 28
+              numero_aprobados: 24
+              numero_suspendidos: 4
+              nota_media: 7.6
+              nota_maxima: 9.0
+              nota_minima: 4.0
+    #
+    post_asignatura_response_example:
+      value:
+        result:
+          status: true
+          http_code: 201
+          trace_id: 12345abcde
+        data:
+          id_asignatura: 1
+          nombre_asignatura: 'Algebra'
+          curso: '2020'
+          profesor:
+            id: 1
+            nombre: 'Luís Martinez'
+    #
+    asignatura_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          trace_id: 12345abcde
+        data:
+          id_asignatura: 1
+          nombre_asignatura: 'Algebra'
+          curso: '2020'
+          profesor:
+            id: 1
+            nombre: 'Luís Martinez'
+    #
+    asignaturas_response_example:
+      value:
+        result:
+          status: true
+          http_code: 206
+          trace_id: 12345abcde
+        metadata:
+          paging:
+            init: 15
+            limit: 5
+            num_page: 3
+            total: 35
+            total_pages: 7
+            links:
+              self:
+                href: '/resources?$init=15&amp;$limit=5'
+              previous:
+                href: '/resources?$init=10&amp;$limit=5'
+              next:
+                href: '/resources?$init=20&amp;$limit=5'
+              first:
+                href: '/resources?$init=0&amp;$limit=5'
+              last:
+                href: '/resources?$init=30&amp;$limit=5'
+        data:
+          asignaturas:
+            - id_asignatura: 1
+              nombre_asignatura: 'Algebra'
+              curso: '2020'
+              profesor:
+                id: 1
+                nombre: 'Luís Martinez'
+            - id_asignatura: 2
+              nombre_asignatura: 'Biología'
+              curso: '2020'
+              profesor:
+                id: 2
+                nombre: 'Ángel Fernández'
+    #
+    direccion_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          trace_id: 12345abcde
+        data:
+          id_direccion: 1
+          provincia: 'Madrid'
+          municipio: 'Mostoles'
+          calle: 'Paseo de la Castellana'
+          numero: 25
+    #
+    direcciones_response_example:
+      value:
+        result:
+          status: true
+          http_code: 206
+          trace_id: 12345abcde
+        metadata:
+          paging:
+            init: 15
+            limit: 5
+            num_page: 3
+            total: 35
+            total_pages: 7
+            links:
+              self:
+                href: '/resources?$init=15&amp;$limit=5'
+              previous:
+                href: '/resources?$init=10&amp;$limit=5'
+              next:
+                href: '/resources?$init=20&amp;$limit=5'
+              first:
+                href: '/resources?$init=0&amp;$limit=5'
+              last:
+                href: '/resources?$init=30&amp;$limit=5'
+        data:
+          direcciones:
+            - id_direccion: 1
+              provincia: 'Madrid'
+              municipio: 'Mostoles'
+              calle: 'Paseo de la Castellana'
+              numero: 25
+            - id_direccion: 1
+              provincia: 'Madrid'
+              municipio: 'Alcalá de Henares'
+              calle: 'Avenida de la Constitución'
+              numero: 2
+    #
+    post_solicitud_beca_response_example:
+      value:
+        result:
+          status: true
+          http_code: 201
+          trace_id: '97917506-527a-4268-823e-11a416fd086b'
+        data:
+          id_solicitud: 1
+          id_alumno: 1
+          fecha_solicitud: "2021-01-25T11:50:59"
+          nif_presentante: '00000001R'
+          tipo_solicitud: "N"
+          observaciones: "Observaciones de la solicitud..."
+    #
+    solicitud_beca_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          trace_id: '97917506-527a-4268-823e-11a416fd086b'
+        data:
+          id_solicitud: 1
+          id_alumno: 1
+          fecha_solicitud: "2021-01-25T11:50:59"
+          nif_presentante: '00000001R'
+          tipo_solicitud: "N"
+          observaciones: "Observaciones de la solicitud..."
+    #
+    post_adjunto_response_example:
+      value:
+        result:
+          status: true
+          http_code: 201
+          trace_id: '97917506-527a-4268-823e-11a416fd086b'
+        data:
+          id_adjunto: 1
+          id_solicitud: 1
+          id_fica: 12043233
+          nombre_fichero: "justificante.pdf"
+          tamano_bytes: 25835
+    #
+    user_info_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: Respuesta satisfactoria
+          trace_id: 12345abcde
+        data:
+          username: 'jl102'
+          nif: '57548731V'
+          roles:
+            - usuario
+          user_details:
+            - key: value
+    #
+    file_creation_response_example:
+      value:
+        result:
+          status: true
+          http_code: 201
+          info: Respuesta satisfactoria
+          trace_id: 12345abcde
+        data:
+          file_id: 'uf_670b9562-b30d-52d5-b827-655787665500'
+          path: '/path/al/recurso'
+          storage_type: 'COMPARTIDO'
+          size_in_bytes: 20000
+          percent_complete: 50
+          last_modified_date: '2020-01-20T12:00:00'
+    #
+    file_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: Solicitud realizada con éxito
+          trace_id: 12345abcde
+        data:
+          file: RWplbXBsbyBkZSBmaWNoZXJvIGVuIEJhc2U2NA==
+    #
+    file_id_response_example:
+      value:
+        result:
+          status: true
+          http_code: 200
+          info: Solicitud realizada con éxito
+          trace_id: 12345abcde
+        data:
+          file_id: uf_670b9562-b30d-52d5-b827-655787665500

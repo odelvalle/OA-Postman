@@ -1,0 +1,957 @@
+openapi: 3.0.0
+info:
+  title: FastAPI
+  version: 0.1.0
+tags:
+  - name: Authorization
+    description: Authorization in Redsys HUB or IGN API
+  - name: ConsentObject
+    description: Consent  in Redsys HUB or IGN API
+  - name: Status
+    description: Status of the API
+  - name: Token
+    description: Flanks token
+servers:
+  - url: https://api.flanks.io/api-psd2/v0/
+  - url: https://api-dev.flanks.io/api-psd2/v0/
+  - url: https://api-test.flanks.io/api-psd2/v0/
+paths:
+  /token:
+    post:
+      summary: Flanks Autentication
+      description: This endpoint will authenticate in the domain DOMAIN, forwarding the credentials provided by the client. Access token returned must be stored hashed, including expiration timestamp. This access_token will be used as validation for the rest of the endpoints.
+      tags:
+        - Token
+      operationId: flanks_autentication
+      requestBody:
+        $ref: "#/components/requestBodies/create_flanks_token_request"
+      responses:
+        default:
+          $ref: "#/components/responses/default_request_api_response"
+        "200":
+          $ref: "#/components/responses/successful_retrieve_flanks_auth_response"
+        "400":
+          $ref: "#/components/responses/error_bad_request_api_response"
+        "401":
+          $ref: "#/components/responses/error_unauthorized_api_response"
+        "500":
+          $ref: "#/components/responses/error_internal_server_error_api_response"
+  /authorization/url:
+    post:
+      security:
+        - AuthToken: []
+      summary: Get Auth Url
+      description: This endpoint will build the url the client must redirect the user to connect a bank from the hub or to connect to ING API
+      tags:
+        - Authorization
+      operationId: get_auth_url
+      requestBody:
+        $ref: "#/components/requestBodies/get_auth_url_request"
+      responses:
+        default:
+          $ref: "#/components/responses/default_request_api_response"
+        "200":
+          $ref: "#/components/responses/succesful_retrieve_url_response"
+        "400":
+          $ref: "#/components/responses/error_bad_request_api_response"
+        "401":
+          $ref: "#/components/responses/error_unauthorized_api_response"
+        "403":
+          $ref: "#/components/responses/error_forbidden_api_response"
+        "429":
+          $ref: "#/components/responses/error_too_many_requests_api_response"
+        "500":
+          $ref: "#/components/responses/error_internal_server_error_api_response"
+  /authorization/token:
+    post:
+      security:
+        - AuthToken: []
+      summary: Get Tokens
+      description: This endpoint will forward to redsys HUB or ING API and return the response with the access_token and the the refresh token
+      tags:
+        - Authorization
+      operationId: get_tokens
+      requestBody:
+        $ref: "#/components/requestBodies/get_auth_tokens_request"
+      responses:
+        default:
+          $ref: "#/components/responses/default_request_api_response"
+        "200":
+          $ref: "#/components/responses/succesful_retrieve_auth_token_response"
+        "400":
+          $ref: "#/components/responses/error_bad_request_api_response"
+        "401":
+          $ref: "#/components/responses/error_unauthorized_api_response"
+        "403":
+          $ref: "#/components/responses/error_forbidden_api_response"
+        "429":
+          $ref: "#/components/responses/error_too_many_requests_api_response"
+        "500":
+          $ref: "#/components/responses/error_internal_server_error_api_response"
+  /consent:
+    post:
+      security:
+        - AuthToken: []
+      summary: Get ConsentObject
+      description: This endpoint will forward to redsys HUB or ING API and return the response with the consent gor accesing the accounts
+      tags:
+        - ConsentObject
+      operationId: get_consent
+      parameters:
+        - required: true
+          schema:
+            title: X-Requestid
+            type: string
+          example: "bf5113e6-3c04-4b30-b08b-505e83200c80"
+          name: X-RequestID
+          in: header
+        - required: true
+          schema:
+            title: Redsysauthorization
+            type: string
+          example: "c9IA4Kv2xMuWqobUBYQPwOi6KxP8qHWGWIomrn9stol81naJS0PMVCHccLA2gpWA"
+          name: RedsysAuthorization
+          in: header
+        - required: true
+          schema:
+            title: Psu-Ipaddress
+            type: string
+          example: "192.12.3.4"
+          name: PSU-IPAddress
+          in: header
+        - required: true
+          schema:
+            title: Tppredirectpreferred
+            enum:
+              - true
+            type: boolean
+          example: true
+          name: TPPRedirectPreferred
+          in: header
+        - required: true
+          schema:
+            title: Tppredirecturi
+            type: string
+          example: "http://XXX/"
+          name: TPPRedirectURI
+          in: header
+        - required: true
+          schema:
+            title: Tpp-Nokredirecturi
+            type: string
+          example: "http://XXX/NOK"
+          name: TPP-NokRedirectURI
+          in: header
+      requestBody:
+        $ref: "#/components/requestBodies/create_consent_request"
+      responses:
+        default:
+          $ref: "#/components/responses/default_request_api_response"
+        "200":
+          $ref: "#/components/responses/succesful_retrieve_consent_response"
+        "400":
+          $ref: "#/components/responses/error_bad_request_api_response"
+        "401":
+          $ref: "#/components/responses/error_unauthorized_api_response"
+        "403":
+          $ref: "#/components/responses/error_forbidden_api_response"
+        "429":
+          $ref: "#/components/responses/error_too_many_requests_api_response"
+        "500":
+          $ref: "#/components/responses/error_internal_server_error_api_response"
+  /status:
+    get:
+      summary: Status of the API
+      description: Returns the status of the API
+      tags:
+        - Status
+      responses:
+        default:
+          $ref: "#/components/responses/default_request_api_response"
+        200:
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+              example: "Ok"
+components:
+  securitySchemes:
+    AuthToken:
+      type: http
+      scheme: bearer
+  schemas:
+    Access:
+      title: Access
+      type: object
+      properties:
+        accounts:
+          title: Accounts
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+        balances:
+          title: Balances
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+        transactions:
+          title: Transactions
+          type: array
+          items:
+            $ref: "#/components/schemas/Account"
+        additionalInformation:
+          $ref: "#/components/schemas/AdditionalInformation"
+        availableAccounts:
+          title: Availableaccounts
+          type: string
+          example: "allAccounts"
+        availableAccountsWithBalance:
+          title: Availableaccountswithbalance
+          type: string
+          example: "allAccounts"
+        allPsd2:
+          title: Allpsd2
+          type: string
+          example: "allAccounts"
+    Account:
+      title: Account
+      required:
+        - iban
+        - bban
+        - msisdn
+        - currency
+      type: object
+      properties:
+        iban:
+          title: Iban
+          type: string
+          example: "DE89 3704 0044 0532 0130 00"
+        bban:
+          title: Bban
+          type: string
+          example: "iziniush"
+        msisdn:
+          title: Msisdn
+          type: string
+          example: "pahnib"
+        currency:
+          title: Currency
+          type: string
+          example: "DZD"
+    AdditionalInformation:
+      title: AdditionalInformation
+      type: object
+      properties:
+        trustedBeneficiaries:
+          title: Trustedbeneficiaries
+          type: array
+          items:
+            $ref: "#/components/schemas/TrustedBeneficiary"
+        ownerName:
+          title: Ownername
+          type: array
+          items:
+            $ref: "#/components/schemas/TrustedBeneficiary"
+    AuthorizationUrlRequest:
+      title: AuthorizationUrlRequest
+      required:
+        - aspsp
+        - scope
+        - redirect_uri
+        - client_id
+        - state
+        - code_challenge
+        - code_challenge_method
+        - response_type
+      type: object
+      properties:
+        aspsp:
+          title: Aspsp
+          type: string
+          example: "BankName"
+        scope:
+          title: Scope
+          enum:
+            - AIS
+          type: string
+          example: "AIS"
+        redirect_uri:
+          title: Redirect Uri
+          type: string
+          example: "https://abc.com/"
+        client_id:
+          title: Client Id
+          type: string
+          example: "PSDES-BE-XXXX"
+        state:
+          title: State
+          type: string
+          example: "123456789a"
+        code_challenge:
+          title: Code Challenge
+          type: string
+          example: "9876543210z"
+        code_challenge_method:
+          title: Code Challenge Method
+          enum:
+            - S256
+          type: string
+          example: "S256"
+        response_type:
+          title: Response Type
+          enum:
+            - code
+          type: string
+          example: "code"
+    AuthorizationUrlResponse:
+      title: AuthorizationUrlResponse
+      required:
+        - authorizationURL
+      type: object
+      properties:
+        authorizationURL:
+          title: Authorizationurl
+          type: string
+          example: "https://hubpsd2.redsys.es/api-oauth-xs2a/services/rest/EVOBANCO/authorize?response_type=code&client_id=PSDES-BE-XXXX&redirect_uri=https%3A%2F%2Fas.com%2F&scope=AIS&state=123456789a&code_challenge_method=S256&code_challenge=9876543210z"
+    ConsentObject:
+      title: ConsentObject
+      required:
+        - access
+        - recurringIndicator
+        - validUntil
+        - frequencyPerDay
+        - combinedServiceIndicator
+      type: object
+      properties:
+        access:
+          $ref: "#/components/schemas/Access"
+        recurringIndicator:
+          title: Recurringindicator
+          type: boolean
+          enum:
+            - true
+          example: true
+        validUntil:
+          title: Validuntil
+          type: string
+          pattern: "YYYY-MM-DD"
+          example: "2099-12-31"
+        frequencyPerDay:
+          title: Frequencyperday
+          type: integer
+          format: int32
+          example: 4
+        combinedServiceIndicator:
+          title: Combinedserviceindicator
+          type: boolean
+          example: false
+    ConsentRequest:
+      title: CosentRequest
+      required:
+        - consent
+        - aspsp
+      type: object
+      properties:
+        consent:
+          $ref: "#/components/schemas/ConsentObject"
+        aspsp:
+          title: Aspsp
+          type: string
+          example: "BankName"
+    ConsentResponse:
+      title: CosentResponse
+      type: object
+      properties:
+        psuMessage:
+          type: string
+          description: Mensaje del PSU
+          example: "Texto de ejemplo"
+        tppMessage:
+          type: object
+          properties:
+            category:
+              type: string
+              description: Categoría del mensaje del TPP
+              example: "Ok"
+            code:
+              type: string
+              description: Código del mensaje del TPP
+              example: "ACCESS_OK"
+            text:
+              type: string
+              description: Texto del mensaje del TPP
+              example: "Acceso OK"
+            path:
+              type: string
+              description: Ruta del mensaje del TPP
+              example: "/example/path"
+          description: Mensaje del TPP
+        consentStatus:
+          type: string
+          description: Estado del consentimiento
+          example: "ACCP"
+        consentId:
+          type: string
+          description: ID del consentimiento
+          example: "123-QWE-456"
+        scaMethods:
+          type: array
+          items:
+            type: object
+            properties:
+              authenticationType:
+                type: string
+                description: Tipo de autenticación del método SCA
+                example: "gajajit"
+              authenticationVersion:
+                type: string
+                description: Versión de autenticación del método SCA
+                example: "pekzavk"
+              authenticationMethodId:
+                type: string
+                description: ID del método de autenticación
+                example: "334188259573760"
+              name:
+                type: string
+                description: Nombre del método de autenticación
+                example: "Trevor Ramos"
+              explanation:
+                type: string
+                description: Explicación del método de autenticación
+                example: "juli"
+          description: Métodos de autenticación SCA
+        _links:
+          type: object
+          properties:
+            scaRedirect:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL de redireccionamiento de SCA
+                  example: "https://hub.example.es/authorize"
+            startAuthorisation:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL de inicio de autorización
+                  example: "https://hub.example.es/authorize"
+            startAuthorisationWithAuthenticationMethodSelection:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL de inicio de autorización con selección de método de autenticación
+                  example: "https://hub.example.es/authorize"
+            self:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL de la respuesta actual
+                  example: "/v1/payments/sepa-credit-transfers/123-qwe-456"
+            status:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL del estado del consentimiento
+                  example: "/v1/payments/sepa-credit-transfers/123-qwe-456/status"
+            scaStatus:
+              type: object
+              properties:
+                href:
+                  type: string
+                  description: URL del estado SCA
+                  example: "/v1/payments/sepa-credit-transfers/123-qwe-456/authorisations/123auth456"
+          description: Enlaces relacionados
+      description: Respuesta de consentimiento
+    ClientCredentialsAuthRequest:
+      title: ClientCredentialsAuthRequest
+      required:
+        - client_id
+        - client_secret
+        - grant_type
+      type: object
+      properties:
+        client_id:
+          title: Client Id
+          type: string
+          example: "1234-abcd-dcba-4321"
+        client_secret:
+          title: Client Secret
+          type: string
+          example: "asimdsgg8945monjksd92msbt"
+        grant_type:
+          title: Grant Type
+          enum:
+            - client_credentials
+          type: string
+          example: "client_credentials"
+    PasswordAuthRequest:
+      title: PasswordAuthRequest
+      required:
+        - client_id
+        - client_secret
+        - grant_type
+        - password
+        - username
+      type: object
+      properties:
+        client_id:
+          title: Client Id
+          type: string
+          example: "1234-abcd-dcba-4321"
+        client_secret:
+          title: Client Secret
+          type: string
+          example: "asimdsgg8945monjksd92msbt"
+        grant_type:
+          title: Grant Type
+          enum:
+            - password
+          type: string
+          example: "password"
+        password:
+          title: Password
+          type: string
+          example: "123456789"
+        username:
+          title: Username
+          type: string
+          example: "user1"
+    AuthResponse:
+      title: AuthResponse
+      required:
+        - access_token
+        - token_type
+        - expires_in
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+          example: "c9IA4Kv2xMuWqobUBYQPwOi6KxP8qHWGWIomrn9stol81naJS0PMVCHccLA2gpWA"
+        token_type:
+          title: Token Type
+          enum:
+            - Bearer
+          type: string
+          example: "Bearer"
+        expires_in:
+          title: Expires In
+          type: integer
+          format: int32
+          example: 3600
+    RefreshTokensRequest:
+      title: RefreshTokensRequest
+      required:
+        - aspsp
+        - refresh_token
+        - client_id
+        - grant_type
+      type: object
+      properties:
+        aspsp:
+          title: Aspsp
+          type: string
+          example: "NombreBanco"
+        refresh_token:
+          title: Refresh Token
+          type: string
+          example: "brhzqXqfrG69jBIG13O0WhCkAIfnOX61atR0xAcbfowkxvQQYXDBjF3JTYvylZjR"
+        client_id:
+          title: Client Id
+          type: integer
+          format: int32
+          example: "PSDES-BE-XXXX"
+        grant_type:
+          title: Grant Type
+          enum:
+            - refresh_token
+          type: string
+          example: "refresh_token"
+    TokensRequest:
+      title: TokensRequest
+      required:
+        - aspsp
+        - code
+        - redirect_uri
+        - client_id
+        - code_verifier
+        - gran_type
+      type: object
+      properties:
+        aspsp:
+          title: Aspsp
+          type: string
+          example: "BankName"
+        code:
+          title: Code
+          type: string
+          example: "ebkXYYund3NiHhT7nb2RYBQoaBDbXe9EEYxCpElAzN1DGLbZjWOYy2mvfxfrGL6m"
+        redirect_uri:
+          title: Redirect Uri
+          type: string
+          example: "https://XXX/"
+        client_id:
+          title: Client Id
+          type: string
+          example: "PSDES-BE-XXXX"
+        code_verifier:
+          title: Code Verifier
+          type: string
+          example: "HOUgj3tKNYqX0iTgkDMP9amYkt6Mt3QbBH95OUJg0KLphjSdjx3u0ITafn83yM5TrNj8AWKC0cp1zjdRCGmduquGusqYxx30dd0TVF2zKh4exuvwD580xmiXnQtTzN97"
+        gran_type:
+          title: Gran Type
+          enum:
+            - authorization_code
+          type: string
+          example: "authorization_code"
+    TokensResponse:
+      title: TokensResponse
+      required:
+        - access_token
+        - token_type
+        - expires_in
+        - refresh_token
+      type: object
+      properties:
+        access_token:
+          title: Access Token
+          type: string
+          example: "c9IA4Kv2xMuWqobUBYQPwOi6KxP8qHWGWIomrn9stol81naJS0PMVCHccLA2gpWA"
+        token_type:
+          title: Token Type
+          enum:
+            - Bearer
+          type: string
+          example: "Bearer"
+        expires_in:
+          title: Expires In
+          type: integer
+          format: int32
+          example: 3600
+        refresh_token:
+          title: Refresh Token
+          type: string
+          example: "brhzqXqfrG69jBIG13O0WhCkAIfnOX61atR0xAcbfowkxvQQYXDBjF3JTYvylZjR"
+    TrustedBeneficiary:
+      title: TrustedBeneficiary
+      required:
+        - iban
+        - bban
+        - pan
+        - maskedPan
+        - msisdn
+        - currency
+      type: object
+      properties:
+        iban:
+          title: Iban
+          type: string
+          example: "ES1111111111111111111111"
+        bban:
+          title: Bban
+          type: string
+          example: "20385778983000760236"
+        pan:
+          title: Pan
+          type: string
+          example: "1234567891234567"
+        maskedPan:
+          title: Maskedpan
+          type: string
+          example: "123456******4567"
+        msisdn:
+          title: Msisdn
+          type: string
+          example: "1549951988"
+        currency:
+          title: Currency
+          type: string
+          example: "EUR"
+    ErrorAPI:
+      title: ErrorAPI
+      type: object
+      properties:
+        error:
+          type: string
+          example: "Unexpected error"
+  requestBodies:
+    get_auth_url_request:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthorizationUrlRequest"
+          examples:
+            get_auth_url_request:
+              $ref: "#/components/examples/get_auth_url_requests_examples"
+      required: true
+    create_flanks_token_request:
+      content:
+        application/json:
+          schema:
+            title: Body
+            anyOf:
+              - $ref: "#/components/schemas/PasswordAuthRequest"
+              - $ref: "#/components/schemas/ClientCredentialsAuthRequest"
+          examples:
+            flanks_auth_request:
+              $ref: "#/components/examples/flanks_auth_requests_examples"
+            flanks_auth_client_credentials_request:
+              $ref: "#/components/examples/flanks_auth_client_credentials_requests_examples"
+      required: true
+    get_auth_tokens_request:
+      content:
+        application/json:
+          schema:
+            title: Body
+            anyOf:
+              - $ref: "#/components/schemas/TokensRequest"
+              - $ref: "#/components/schemas/RefreshTokensRequest"
+          examples:
+            get_tokens_request:
+              $ref: "#/components/examples/get_tokens_requests_examples"
+            refresh_tokens_request:
+              $ref: "#/components/examples/refresh_tokens_requests_examples"
+      required: true
+    create_consent_request:
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ConsentRequest"
+          examples:
+            create_consent_request:
+              $ref: "#/components/examples/create_consent_requests_examples"
+      required: true
+  responses:
+    successful_retrieve_flanks_auth_response:
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthResponse"
+          examples:
+            flanks_auth_response:
+              $ref: "#/components/examples/flanks_auth_responses_examples"
+    succesful_retrieve_url_response:
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthorizationUrlResponse"
+          examples:
+            authorization_url_response:
+              $ref: "#/components/examples/authorization_url_responses_examples"
+    succesful_retrieve_auth_token_response:
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/TokensResponse"
+          examples:
+            auth_token_response:
+              $ref: "#/components/examples/auth_token_responses_examples"
+    succesful_retrieve_consent_response:
+      description: Successful Response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ConsentResponse"
+          examples:
+            consent_response:
+              $ref: "#/components/examples/consent_response_requests_examples"
+    default_request_api_response:
+      description: Error bad request API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            default_request_response:
+              $ref: "#/components/examples/default_responses_examples"
+    error_bad_request_api_response:
+      description: Error bad request API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            bad_request_response:
+              $ref: "#/components/examples/bad_request_responses_examples"
+    error_unauthorized_api_response:
+      description: Error unauthorized API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            unauthorized_api_response:
+              $ref: "#/components/examples/unauthorized_api_responses_examples"
+    error_forbidden_api_response:
+      description: Error Forbidden API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            unauthorized_api_response:
+              $ref: "#/components/examples/forbidden_api_responses_examples"
+    error_too_many_requests_api_response:
+      description: Error Too many request API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            too_many_requests_api_response:
+              $ref: "#/components/examples/too_many_requests_api_responses_examples"
+    error_internal_server_error_api_response:
+      description: Error internal server error API response
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorAPI"
+          examples:
+            internal_server_error_response:
+              $ref: "#/components/examples/internal_server_error_responses_examples"
+  examples:
+    flanks_auth_requests_examples:
+      value:
+        username: "user1"
+        password: "1234"
+        client_id: "1234-abcd-dcba-4321"
+        client_secret: "asimdsgg8945monjksd92msbt"
+        grant_type: "password"
+    get_auth_url_requests_examples:
+      value:
+        aspsp: "EVOBANCO"
+        scope: "AIS"
+        redirect_uri: "https://as.com/"
+        client_id: "PSDES-BE-XXXX"
+        state: "123456789a"
+        code_challenge: "9876543210z"
+        code_challenge_method: "S256"
+        response_type: "code"
+    flanks_auth_client_credentials_requests_examples:
+      value:
+        client_id: "1234-abcd-dcba-4321"
+        client_secret: "asimdsgg8945monjksd92msbt"
+        grant_type: "client_credentials"
+    get_tokens_requests_examples:
+      value:
+        aspsp: "EVOBANCO"
+        code: "ebkXYYund3NiHhT7nb2RYBQoaBDbXe9EEYxCpElAzN1DGLbZjWOYy2mvfxfrGL6m"
+        redirect_uri: "https://XXX/"
+        client_id: "PSDES-BE-XXXX"
+        code_verifier: "HOUgj3tKNYqX0iTgkDMP9amYkt6Mt3QbBH95OUJg0KLphjSdjx3u0ITafn83yM5TrNj8AWKC0cp1zjdRCGmduquGusqYxx30dd0TVF2zKh4exuvwD580xmiXnQtTzN97"
+        grant_type: "authorization_code"
+    refresh_tokens_requests_examples:
+      value:
+        aspsp: "EVOBANCO"
+        refresh_token: str
+        client_id: "PSDES-BE-XXXX"
+        gran_type: "refresh_token"
+    create_consent_requests_examples:
+      value:
+        consent:
+          access:
+            accounts:
+              - iban: "DE89 3704 0044 0532 0130 00"
+                bban: "fihomaha"
+                msisdn: "avaviviz"
+                currency: "BTN"
+            balances:
+              - iban: "DE89 3704 0044 0532 0130 00"
+                bban: "zuzobare"
+                msisdn: "huoj"
+                currency: "SDG"
+            transactions:
+              - iban: "DE89 3704 0044 0532 0130 00"
+                bban: "dodki"
+                msisdn: "ugnevgod"
+                currency: "AZN"
+            additionalInformation:
+              trustedBeneficiaries:
+                - iban: "ES1111111111111111111111"
+                  bban: "20385778983000760236"
+                  pan: "1234567891234567"
+                  maskedPan: "123456******4567"
+                  msisdn: "1549951988"
+                  currency: "EUR"
+              ownerName:
+                - iban: "ES1111111111111111111111"
+                  bban: "20385778983000760236"
+                  pan: "1234567891234567"
+                  maskedPan: "123456******4567"
+                  msisdn: "1549951988"
+                  currency: "EUR"
+          recurringIndicator: "true"
+          validUntil: "2020-05-17"
+          frequencyPerDay: "4"
+          combinedServiceIndicator: "false"
+        aspsp: "EVOBANCO"
+    authorization_url_responses_examples:
+      value:
+        authorizationURL: "https://hubpsd2.redsys.es/api-oauth-xs2a/services/rest/EVOBANCO/authorize?response_type=code&client_id=PSDES-BE-XXXX&redirect_uri=https%3A%2F%2Fas.com%2F&scope=AIS&state=123456789a&code_challenge_method=S256&code_challenge=9876543210z"
+    flanks_auth_responses_examples:
+      value:
+        access_token: "c9IA4Kv2xMuWqobUBYQPwOi6KxP8qHWGWIomrn9stol81naJS0PMVCHccLA2gpWA"
+        token_type: "Bearer"
+        expires_in: 3600
+    auth_token_responses_examples:
+      value:
+        access_token: "c9IA4Kv2xMuWqobUBYQPwOi6KxP8qHWGWIomrn9stol81naJS0PMVCHccLA2gpWA"
+        token_type: "Bearer"
+        expires_in: 3600
+        refresh_token: "brhzqXqfrG69jBIG13O0WhCkAIfnOX61atR0xAcbfowkxvQQYXDBjF3JTYvylZjR"
+    consent_response_requests_examples:
+      value:
+        psuMessage: Texto de ejemplo
+        tppMessage:
+          category: OK
+          code: ACCESS_OK
+          text: Acceso OK
+          path: /example/path
+        consentStatus: ACCP
+        consentId: "123-QWE-456"
+        scaMethods:
+          - authenticationType: ziojoog
+            authenticationVersion: zuhn
+            authenticationMethodId: "318238409883648"
+            name: Glenn Greer
+            explanation: fonde
+        _links:
+          scaRedirect:
+            href: "https://hub.example.es/authorize"
+          startAuthorisation:
+            href: "https://hub.example.es/authorize"
+          startAuthorisationWithAuthenticationMethodSelection:
+            href: "https://hub.example.es/authorize"
+          self:
+            href: "/v1/payments/sepa-credit-transfers/123-qwe-456"
+          status:
+            href: "/v1/payments/sepa-credit-transfers/123-qwe-456/status"
+          scaStatus:
+            href: "/v1/payments/sepa-credit-transfers/123-qwe-456/authorisations/123auth456"
+    default_responses_examples:
+      value:
+        error: "Unexpected error"
+    bad_request_responses_examples:
+      value:
+        error: "Bad request"
+    unauthorized_api_responses_examples:
+      value:
+        error: "Unauthorized"
+    forbidden_api_responses_examples:
+      value:
+        error: "Forbidden"
+    too_many_requests_api_responses_examples:
+      value:
+        error: "Too many request"
+    internal_server_error_responses_examples:
+      value:
+        error: "Internal server error"

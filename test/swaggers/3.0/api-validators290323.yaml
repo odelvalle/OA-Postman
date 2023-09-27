@@ -1,0 +1,737 @@
+openapi: 3.0.0
+info:
+  title: API-Validators
+  version: v1
+  contact:
+    name: TowerTech
+    url: 'https://towertech-americas.webnode.page/'
+    email: soporteingenieria@towertechamericas.co
+  description: API Validations TowerTech
+servers:
+  - url: 'https://api-qa-transapp.towertechamericas.co/api-validators/v1'
+    description: qa-environments
+tags:
+  - name: Validators
+    description: Operations and resources related to validators
+  - name: Monitoring
+    description: Operations and resources related to monitoring
+paths:
+  /payment-orders:
+    post:
+      summary: Create a payment order
+      description: Allows create a payment order
+      operationId: createPaymentOrder
+      tags:
+        - Validators
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                validatorUniqueId:
+                  $ref: '#/components/schemas/uuid'
+                validatorLatitude:
+                  type: number
+                  format: float
+                  example: 6.17080266
+                validatorLongitude:
+                  type: number
+                  format: float
+                  example: -75.64913667
+                transactionCurrencyCode:
+                  type: integer
+                  format: int32
+                  example: 170
+                dateLocal:
+                  type: string
+                  format: date-time
+                  example: '2022-05-18T08:44:42-05:00'
+                validationResult:
+                  type: string
+                  example: OK
+                  enum:
+                    - OK
+                    - KOBlacklist
+                    - KOTime
+                    - KOFormat
+                    - Other
+                    - KONumPassages
+                messageResult:
+                  type: string
+                  example: XXXXX
+                typeCommunications:
+                  type: string
+                  enum:
+                    - FIX
+                    - CELL
+                  example: CELL
+                userId:
+                  type: integer
+                  format: int64
+                  example: 222
+                dataQRCode:
+                  type: string
+                  example: xR222ZXKBcJLDzOjdmJ06kQETcBVJw7L12OWtRkQAFRmR5mzmyKLuAxcmpUEZFqHfwEtgFqPkSXx\nLKE5GdO4MXxpauCGp3S75idJd9BVDij36SA9wHBNulR051xWXSkzEj7BA/QY0DoU3G4bKSHNUH+f\ndjNhuifkHOrhohrkhPUKJfRvRfJIcCEfY5CEjQ+a7tg86kI0b2mshSRg4iQLIkGWxI7d2g0O2aPk\nlmqKNs2dnYC5QSh8cFkKA+155HKpIS1oKSVL2ZMA70c2rPAOymbAA0oSk1CaU+K6KiVNd04B7nAe\ni86xbRI2tTNzOeGqH22/RtzfuveWpqZ1L7HWkQ==\n
+                numPassages:
+                  type: integer
+                  format: int32
+                  default: 1
+                  example: 2
+                qrId:
+                  type: string
+                  example: B72782160A1F2D4E6E60070997BBEAAB
+                validatorSystemTraceAuditNumber:
+                  type: integer
+                  format: int64
+                  example: 146
+                  minimum: 0
+                paymentMedia:
+                  type: integer
+                  format: int64
+                  example: 214
+                hmac:
+                  type: string
+                  example: 2c03dfee394d5e4bd15e261ec8a73166ba9e8e574353268b83eb0a8f9af2b0d1
+              required:
+                - validatorUniqueId
+                - validatorLatitude
+                - validatorLongitude
+                - transactionCurrencyCode
+                - dateLocal
+                - validationResult
+                - messageResult
+                - typeCommunications
+                - userId
+                - dataQRCode
+                - qrId
+                - validatorSystemTraceAuditNumber
+                - hmac
+            examples:
+              'Payment order':
+                value:
+                  validatorUniqueId: 550e8400-e29b-41d4-a716-446655441234
+                  validatorLatitude: 6.17080266
+                  validatorLongitude: -75.64913667
+                  transactionCurrencyCode: 170
+                  dateLocal: '2022-05-18T08:44:42-05:00'
+                  validationResult: OK
+                  messageResult: XXXXX
+                  typeCommunications: FIX
+                  userId: 222
+                  dataQRCode: xR222ZXKBcJLDzOjdmJ06kQETcBVJw7L12OWtRkQAFRmR5mzmyKLuAxcmpUEZFqHfwEtgFqPkSXx\nLKE5GdO4MXxpauCGp3S75idJd9BVDij36SA9wHBNulR051xWXSkzEj7BA/QY0DoU3G4bKSHNUH+f\ndjNhuifkHOrhohrkhPUKJfRvRfJIcCEfY5CEjQ+a7tg86kI0b2mshSRg4iQLIkGWxI7d2g0O2aPk\nlmqKNs2dnYC5QSh8cFkKA+155HKpIS1oKSVL2ZMA70c2rPAOymbAA0oSk1CaU+K6KiVNd04B7nAe\ni86xbRI2tTNzOeGqH22/RtzfuveWpqZ1L7HWkQ==\n
+                  numPassages: 1
+                  qrId: B72782160A1F2D4E6E60070997BBEAAB
+                  validatorSystemTraceAuditNumber: 146
+                  paymentMedia: 214
+                  hmac: 2c03dfee394d5e4bd15e261ec8a73166ba9e8e574353268b83eb0a8f9af2b0d1
+      responses:
+        '202':
+          description: Payment order creation response
+          headers:
+            location:
+              description: Resource location
+              schema:
+                $ref: '#/components/schemas/locationHeader'
+            x-trace-id:
+              description: Trace ID to track the request through the system
+              schema:
+                $ref: '#/components/schemas/uuid'
+            x-request-id:
+              description: Request ID to identify the request
+              schema:
+                $ref: '#/components/schemas/uuid'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/standardResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          id:
+                            $ref: '#/components/schemas/uuid'
+              examples:
+                'Payment order':
+                  value:
+                    data:
+                      id: 550e8400-e29b-41d4-a716-446655441234
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '415':
+          $ref: '#/components/responses/unsupportedMediaTypeResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+        default:
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /validators/me/blacklist:
+    get:
+      summary: Retrieve list of users can not used the application
+      description: Retrieve list of users can not used the application
+      operationId: retrieveBlacklist
+      tags:
+        - Validators
+      parameters:
+        - $ref: '#/components/parameters/initParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/totalParam'
+        - $ref: '#/components/parameters/orderByParam'
+        - $ref: '#/components/parameters/selectParam'
+        - $ref: '#/components/parameters/excludeParam'
+        - $ref: '#/components/parameters/expandParam'
+      responses:
+        '204':
+          $ref: '#/components/responses/noContentResponse'
+        '206':
+          description: OK
+          headers:
+            x-trace-id:
+              description: Trace ID to track the request through the system
+              schema:
+                $ref: '#/components/schemas/uuid'
+            x-request-id:
+              description: Request ID to identify the request
+              schema:
+                $ref: '#/components/schemas/uuid'
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/standardPaginatedResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          blacklist:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/uuid'
+              examples:
+                'Blacklist':
+                  value:
+                    paging:
+                      init: 1
+                      limit: 10
+                      links:
+                        self:
+                          href: "/validators/me/blacklist?init=1&limit=10&total=false"
+                        first:
+                          href: "/validators/me/blacklist?init=1&limit=10&total=false"
+                        previous: null
+                        next:
+                          href: "/validators/me/blacklist?init=11&limit=10&total=false"
+                    data:
+                      blacklist:
+                        - 683f0958-4a27-4e0d-ba27-78ae3802949a
+                        - 2ee44068-cbfb-49d1-ae27-79e073ab2812
+                        - f3ac7efe-0cc7-4316-bbee-7426eae237e4
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+        default:
+          $ref: '#/components/responses/internalServerErrorResponse'
+  /validators/me/settings:
+    get:
+      summary: Retrieve validator settings
+      description: Allows retrieve validator settings
+      operationId: retrieveValidatorSettings
+      tags:
+        - Validators
+      responses:
+        '200':
+          description: OK
+          headers:
+            x-trace-id:
+              description: Trace ID to track the request through the system
+              schema:
+                $ref: '#/components/schemas/uuid'
+            x-request-id:
+              description: Request ID to identify the request
+              schema:
+                $ref: '#/components/schemas/uuid'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/validatorSettings'
+              examples:
+                'Validator settings':
+                  value:
+                    data:
+                      timeChangeQr: 4
+                      rsaPrivateKey: MIICWwIBAAKBgQCBVwRANbNKkU6dGeHZjbJwsoAt/pAhJfC5PHN7yOA+kSlbRNoQWpjjcrXqf/HKlb7nWJdLeBVyNosE19aK0VfDZRFM5bl9Np+99dgVHnz/d0mdLXksqMnccXVK40CvLS+6tECrxkU3UHY7baHkbfCbBBxKR/bOe2SjCKhA3/cWDwIDAQABAoGAfqDV7ZNltJSstcyYPKmo0QNB0UYQkBOYKZLQsZlKSpdOOSggorBATTaKekrHTALtw4wNm/q2bHqQAq7aQlCQrbaOBc93M3kwnJ5dZ6UKPXwbI7IyWQCX1+NbmOrNw2dSNMJQgdkKwKrJiH3xoewzkrS8n9uRyuDGf+2XTdLh82kCQQDcbundFelg3yt6HcPbVCfEesf5oz1ZLrbJXxXY77k/Dt9hsxdHnz1wr4N08biJHCCc1y0qBST2Y2D02qPDT0SNAkEAljV0b3sjADMlKW3nbRXRIkDsTF54Y9vsl9aTfn9kwW6GzsFygtXU04nia+HdjNDwhHA4uM2QeBWVYoOHW8y0CwJANAUQt5X2L2A7OGRR1i6z+9Al5Sm6zpMRm9AOrdVU2CbAXKQQ+FwB+dfRpAVvURwMLjcxd1sjb+nf9airQOox+QJANsvhYhnlttjxoZ96YY0n8fsFOQbtnGBKe0nIHMmUlAwiGaLwh1JChbkzZG/NRuWiGG5oAuLa5TPaf0nEQ3T16QJAdTmR2zwnfDNieGdsNArMfeX79ShKN7k+1ls2y4b5mlqwwT3IA6BzPTorDC3m7PgKIhXFS/ujWY+slpOGoDjIcw==
+                      timeBlacklistDownload: 60
+                      hmacSecretKey: 2c03dfee394d5e4bd15e261ec8a73166ba9e8e574353268b83eb0a8f9af2b0d1
+        '204':
+          $ref: '#/components/responses/noContentResponse'
+        '400':
+          $ref: '#/components/responses/badRequestResponse'
+        '401':
+          $ref: '#/components/responses/unauthorizedResponse'
+        '403':
+          $ref: '#/components/responses/forbiddenResponse'
+        '404':
+          $ref: '#/components/responses/notFoundResponse'
+        '503':
+          $ref: '#/components/responses/serviceUnavailableResponse'
+        default:
+          $ref: '#/components/responses/internalServerErrorResponse'
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: x-api-key
+      in: header
+    oAuth2:
+      description: OAuth 2.0 authentication.
+      type: oauth2
+      flows:
+        authorizationCode:
+          authorizationUrl: https://suramexicob2capimarketdev.b2clogin.com/suramexicob2capimarketdev.onmicrosoft.com/b2c_1_signin_signup/oauth2/v2.0/authorize
+          tokenUrl: https://suramexicob2capimarketdev.b2clogin.com/suramexicob2capimarketdev.onmicrosoft.com/b2c_1_signin_signup/oauth2/v2.0/token
+          scopes:
+            3cd55b30-f7e9-4c5d-87c5-aa87b6b9278b: Grant access to data
+        password:
+          tokenUrl: https://suramexicob2capimarketdev.b2clogin.com/suramexicob2capimarketdev.onmicrosoft.com/b2c_1_signin_ropc/oauth2/v2.0/token
+          scopes:
+            3cd55b30-f7e9-4c5d-87c5-aa87b6b9278b: Grant access to data
+        clientCredentials:
+          tokenUrl: https://login.microsoftonline.com/suramexicob2capimarketdev.onmicrosoft.com/oauth2/v2.0/token
+          scopes:
+            https://suramexicob2capimarketdev.onmicrosoft.com/3cd55b30-f7e9-4c5d-87c5-aa87b6b9278b/.default: Grant access to data
+  parameters:
+    initParam:
+      in: query
+      name: $init
+      description: |
+        Initial record to be shown in the list. 
+        * Minimum value: 1
+        * Maximum value: Total of records
+      example: 10
+      schema:
+        type: integer
+        format: int32
+        default: 1
+        minimum: 1
+    limitParam:
+      in: query
+      name: $limit
+      description: |
+        Maximum number of records per page.
+        * Minimum value: 1
+        * Maximum value: 250
+      example: 10
+      schema:
+        type: integer
+        format: int32
+        default: 25
+        minimum: 1
+        maximum: 250
+    totalParam:
+      in: query
+      name: $total
+      description: |
+        Indicates whether the _total_ and _total_pages_ attributes should be calculated and returned in the _metadata.paging_ object of the standard response.
+      example: true
+      schema:
+        type: boolean
+        default: false
+    selectParam:
+      in: query
+      name: $select
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      description: |
+        Allows you to select the attributes of the resource that you want to obtain in the query.
+        It is recommended for use when you only want to obtain a few attributes from a complex resource.
+        It can be specified as an array of attributes.
+      example: [id,long_description,type]
+    excludeParam:
+      in: query
+      name: $exclude
+      schema:
+        type: array
+        items:
+          type: string
+        minItems: 1
+        maxItems: 100
+      description: |
+        Allows you to exclude certain attributes of the resource.
+        It is recommended for use when you want to exclude some attributes from a complex resource.
+        It can be specified as an array of attributes.
+      example: [id,type]
+    expandParam:
+      in: query
+      name: $expand
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      description: |  
+        Indicates a list of sub-attributes that you want to expand.
+        It can be specified as an array of attributes.
+      example: [subcategories,typeName]
+    orderByParam:
+      in: query
+      name: $orderby
+      schema:
+        type: array
+        minItems: 1
+        maxItems: 100
+        items:
+          type: string
+      description: |
+        It allows to indicate the ordering criteria of a query.
+        It can be specified as an array of attributes.
+      example: [date desc]
+  schemas:
+    standardError:
+      title: standardError
+      type: object
+      properties:
+        code:
+          type: string
+          minLength: 2
+          maxLength: 20
+          description: Error code
+          example: SERR100
+        message:
+          type: string
+          minLength: 2
+          maxLength: 250
+          description: Error message
+          example: Error message
+        field:
+          type: string
+          minLength: 2
+          maxLength: 100
+          description: Field with the error
+          example: username
+        traceId:
+          description: Trace identificator
+          type: string
+          format: uuid
+          minLength: 36
+          maxLength: 36
+          pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+          example: e3613ba0-ca8f-11ec-9d64-0242ac120002
+      required:
+        - code
+        - message
+    standardPagingLink:
+      type: object
+      nullable: true
+      properties:
+        href:
+          type: string
+          minLength: 10
+          maxLength: 2048
+          description: URL encoded link
+          example: '/resources?init=1&limit=25&total=false'
+    standardPaging:
+      type: object
+      description: Pagination information object
+      properties:
+        init:
+          type: integer
+          format: int32
+          description: Initial record of the page
+          example: 1
+        limit:
+          type: integer
+          format: int32
+          description: Number of records per page
+          example: 25
+        total:
+          type: integer
+          format: int32
+          description: Total number of records
+          example: 35
+        links:
+          type: object
+          properties:
+            self:
+              $ref: '#/components/schemas/standardPagingLink'
+            first:
+              $ref: '#/components/schemas/standardPagingLink'
+            previous:
+              $ref: '#/components/schemas/standardPagingLink'
+            next:
+              $ref: '#/components/schemas/standardPagingLink'
+            last:
+              $ref: '#/components/schemas/standardPagingLink'
+          required:
+            - previous
+            - next
+            - self
+      required:
+        - init
+        - limit
+        - links
+    standardResponse:
+      type: object
+      properties:
+        data:
+          anyOf:
+            - type: object
+            - type: array
+              items:
+                type: object
+        result:
+          type: object
+      required:
+        - data
+    standardErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/standardError'
+      required:
+        - errors
+    standardPaginatedResponse:
+      allOf:
+        - $ref: '#/components/schemas/standardResponse'
+        - type: object
+          properties:
+            paging:
+              $ref: '#/components/schemas/standardPaging'
+      required:
+        - paging
+        - data
+    uuid:
+      title: uuid
+      type: string
+      description: UUID
+      format: uuid
+      minLength: 36
+      maxLength: 36
+      pattern: '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+      example: 62977d46-7a50-41c9-8d84-38272ac2a8df
+      readOnly: true
+    locationHeader:
+      type: string
+      maxLength: 2048
+      pattern: ^(?:(?:((http|https):\/\/)?[^\/]+))?(?:\/|^)((?:[^#\.\/:?\n\r]+\/?)+(?=\?|#|$|\.|\/))$
+      example: '/resources/acd0df8b-651a-4e8b-aeb3-a448408d90fb'
+    validatorSettings:
+      title: validatorSettings
+      type: object
+      properties:
+        timeChangeQr:
+          type: integer
+          format: int32
+          minimum: 1
+          example: 4
+        rsaPrivateKey:
+          type: string
+          example: MIICWwIBAAKBgQCBVwRANbNKkU6dGeHZjbJwsoAt/pAhJfC5PHN7yOA+kSlbRNoQWpjjcrXqf/HKlb7nWJdLeBVyNosE19aK0VfDZRFM5bl9Np+99dgVHnz/d0mdLXksqMnccXVK40CvLS+6tECrxkU3UHY7baHkbfCbBBxKR/bOe2SjCKhA3/cWDwIDAQABAoGAfqDV7ZNltJSstcyYPKmo0QNB0UYQkBOYKZLQsZlKSpdOOSggorBATTaKekrHTALtw4wNm/q2bHqQAq7aQlCQrbaOBc93M3kwnJ5dZ6UKPXwbI7IyWQCX1+NbmOrNw2dSNMJQgdkKwKrJiH3xoewzkrS8n9uRyuDGf+2XTdLh82kCQQDcbundFelg3yt6HcPbVCfEesf5oz1ZLrbJXxXY77k/Dt9hsxdHnz1wr4N08biJHCCc1y0qBST2Y2D02qPDT0SNAkEAljV0b3sjADMlKW3nbRXRIkDsTF54Y9vsl9aTfn9kwW6GzsFygtXU04nia+HdjNDwhHA4uM2QeBWVYoOHW8y0CwJANAUQt5X2L2A7OGRR1i6z+9Al5Sm6zpMRm9AOrdVU2CbAXKQQ+FwB+dfRpAVvURwMLjcxd1sjb+nf9airQOox+QJANsvhYhnlttjxoZ96YY0n8fsFOQbtnGBKe0nIHMmUlAwiGaLwh1JChbkzZG/NRuWiGG5oAuLa5TPaf0nEQ3T16QJAdTmR2zwnfDNieGdsNArMfeX79ShKN7k+1ls2y4b5mlqwwT3IA6BzPTorDC3m7PgKIhXFS/ujWY+slpOGoDjIcw==
+        timeBlacklistDownload:
+          type: integer
+          minimum: 0
+          example: 60
+          format: int32
+        hmacSecretKey:
+          type: string
+          example: ee40ca7bc90df844d2f5b5667b27361a2350fad99352d8a6ce061c69e41e5d32
+      required:
+        - timeChangeQr
+        - rsaPrivateKey
+        - timeBlacklistDownload
+        - hmacSecretKey
+      x-examples:
+        example-1:
+          timeChangeQr: 4
+          rsaPrivateKey: MIICWwIBAAKBgQCBVwRANbNKkU6dGeHZjbJwsoAt/pAhJfC5PHN7yOA+kSlbRNoQWpjjcrXqf/HKlb7nWJdLeBVyNosE19aK0VfDZRFM5bl9Np+99dgVHnz/d0mdLXksqMnccXVK40CvLS+6tECrxkU3UHY7baHkbfCbBBxKR/bOe2SjCKhA3/cWDwIDAQABAoGAfqDV7ZNltJSstcyYPKmo0QNB0UYQkBOYKZLQsZlKSpdOOSggorBATTaKekrHTALtw4wNm/q2bHqQAq7aQlCQrbaOBc93M3kwnJ5dZ6UKPXwbI7IyWQCX1+NbmOrNw2dSNMJQgdkKwKrJiH3xoewzkrS8n9uRyuDGf+2XTdLh82kCQQDcbundFelg3yt6HcPbVCfEesf5oz1ZLrbJXxXY77k/Dt9hsxdHnz1wr4N08biJHCCc1y0qBST2Y2D02qPDT0SNAkEAljV0b3sjADMlKW3nbRXRIkDsTF54Y9vsl9aTfn9kwW6GzsFygtXU04nia+HdjNDwhHA4uM2QeBWVYoOHW8y0CwJANAUQt5X2L2A7OGRR1i6z+9Al5Sm6zpMRm9AOrdVU2CbAXKQQ+FwB+dfRpAVvURwMLjcxd1sjb+nf9airQOox+QJANsvhYhnlttjxoZ96YY0n8fsFOQbtnGBKe0nIHMmUlAwiGaLwh1JChbkzZG/NRuWiGG5oAuLa5TPaf0nEQ3T16QJAdTmR2zwnfDNieGdsNArMfeX79ShKN7k+1ls2y4b5mlqwwT3IA6BzPTorDC3m7PgKIhXFS/ujWY+slpOGoDjIcw==
+          timeBlacklistDownload: 60
+          hmacSecretKey: ee40ca7bc90df844d2f5b5667b27361a2350fad99352d8a6ce061c69e41e5d32
+  responses:
+    noContentResponse:
+      description: No content
+      headers:
+        X-Trace-ID:
+          schema:
+            type: string
+          description: Trace ID to track the request through the system
+        X-Request-ID:
+          schema:
+            type: string
+          description: Request ID to track the request through the system
+    badRequestResponse:
+      description: Bad request
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Bad Request':
+          #     value:
+          #       errors:
+          #         - code: '400'
+          #           message: Bad request
+          #           field: field
+          #           traceId: 6ff801b6-ca90-11ec-9d64-0242ac120002
+    unauthorizedResponse:
+      description: Unauthorized
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Unauthorized':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '401'
+          #           message: Unauthorized
+    forbiddenResponse:
+      description: Forbidden
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Forbidden':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '403'
+          #           message: Forbidden
+    notFoundResponse:
+      description: Not found
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Not found':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '404'
+          #           message: Not found
+    unsupportedMediaTypeResponse:
+      description: Unsupported Media Type
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Unsupported Media Type':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '415'
+          #           message: Unsupported Media Type
+    internalServerErrorResponse:
+      description: Internal server error
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Internal server error':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '500'
+          #           message: Internal server error
+    serviceUnavailableResponse:
+      description: Service unavailable
+      headers:
+        x-trace-id:
+          description: Trace ID to track the request through the system
+          schema:
+            $ref: '#/components/schemas/uuid'
+        x-request-id:
+          description: Request ID to identify the request
+          schema:
+            $ref: '#/components/schemas/uuid'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/standardErrorResponse'
+          # examples:
+          #   'Z Service unavailable':
+          #     value:
+          #       data: null
+          #       errors:
+          #         - code: '503'
+          #           message: Service unavailable

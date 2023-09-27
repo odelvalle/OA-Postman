@@ -1,0 +1,186 @@
+{
+  "item": [
+    {
+      "name": "Trabajos",
+      "item": [
+        {
+          "name": "Operaciones y modelos a ejecutar.",
+          "item": [
+            {
+              "id": "6b439580-71e8-424c-9e73-fcbc696afac2",
+              "name": "[202] Operación registrada correctamente - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n    {},\n    {},\n    {},\n    {}\n]"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e46547b2-9976-4691-a94b-6069c4d922e0",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 202\", function() {",
+                      "  pm.response.to.have.status(202);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "f4f1105d-f978-4da5-967b-974ffb21827a",
+              "name": "[400] Invalid body",
+              "request": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "2792bfd2-6014-4b8b-868f-52fb7147bfee",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "c9c7b130-7731-4409-a49e-d13351e6646d",
+              "name": "[401] Acceso denegado",
+              "request": {
+                "url": {
+                  "path": [
+                    "batch"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "[\n    {},\n    {},\n    {}\n]"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "7a78e5a5-ef54-42bd-a59c-7de36cc1bb8f",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "id": "base-url",
+      "type": "string",
+      "value": "https://api.example/despachos/v1",
+      "key": "base-url"
+    }
+  ],
+  "info": {
+    "_postman_id": "69eeb638-a287-44d9-ae5b-248d5d450ab4",
+    "name": "Gobierno-del-dato_bf79854979c7_V_2ca4625fa456_V",
+    "version": {
+      "raw": "1.0.0",
+      "major": 1,
+      "minor": 0,
+      "patch": 0,
+      "prerelease": [],
+      "build": [],
+      "string": "1.0.0"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}

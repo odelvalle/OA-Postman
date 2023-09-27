@@ -1,0 +1,2298 @@
+{
+  "item": [
+    {
+      "name": "Token",
+      "item": [
+        {
+          "name": "Flanks Autentication",
+          "item": [
+            {
+              "id": "21209d4f-8e9c-45c9-9d64-cce1b958a6ce",
+              "name": "[200] Successful Response - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"client_id\": \"sed\",\n    \"client_secret\": \"\",\n    \"grant_type\": \"password\",\n    \"password\": \"non cupidatat magna\",\n    \"username\": \"commodo\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "bbedab2d-3039-465f-9449-ded0d7786195",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "c8e8a670-bfd3-4649-a096-486a9c9e3eeb",
+              "name": "[400] Invalid body",
+              "request": {
+                "url": {
+                  "path": [
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "8a1324f2-2f2d-4257-bb2d-5b4aa2f24321",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "3c4bf065-8e51-4510-9d06-5c19d458a479",
+              "name": "[401] Error unauthorized API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"client_id\": \"enim fugiat eu\",\n    \"client_secret\": \"laborum Lorem voluptate\",\n    \"grant_type\": \"client_credentials\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "4c1ddb5e-ffb2-458f-a084-f858e3b7830a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Authorization",
+      "item": [
+        {
+          "name": "Get Auth Url",
+          "item": [
+            {
+              "id": "2e31186d-70d1-42e1-97e6-b9e6a05698b1",
+              "name": "[200] Successful Response - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"magn\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"exercitation aute ad cillum\",\n    \"client_id\": \"nulla est aute laboris conseq\",\n    \"state\": \"amet\",\n    \"code_challenge\": \"e\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "0238087c-5275-4c6b-8239-9eac0a678d09",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "300333eb-989e-483a-9040-d00ad8997336",
+              "name": "[400] Invalid body",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "6f458ffb-77db-4a9a-b14f-af286e8a6951",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "4a032855-06fd-49b2-ad28-5a17c468395a",
+              "name": "[400] Error bad request API response - w/ aspsp",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"enim\",\n    \"client_id\": \"et\",\n    \"state\": \"labore\",\n    \"code_challenge\": \"aliquip eu amet irure\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "ddedc55f-0028-49b5-97f2-4cfd166f2cc7",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "57cc1cc3-83c8-4ad6-bb64-805cef24bd5b",
+              "name": "[400] Error bad request API response - w/ scope",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"dolor pro\",\n    \"redirect_uri\": \"aute\",\n    \"client_id\": \"veniam tempor do\",\n    \"state\": \"esse aliqua ad consequat quis\",\n    \"code_challenge\": \"sed sint quis qui\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "cb4b5736-2aeb-479e-b17b-cf3814d07a24",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "d8ff6fe5-2e59-4cd0-beca-c1d674a59999",
+              "name": "[400] Error bad request API response - w/ redirect_uri",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"quis \",\n    \"scope\": \"AIS\",\n    \"client_id\": \"proident\",\n    \"state\": \"ea aute nulla et\",\n    \"code_challenge\": \"aliquip ex\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "91059033-a33d-45d0-89e6-6c576c3887b1",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "ca4c6270-d8f5-4f83-846a-a7caf80a2481",
+              "name": "[400] Error bad request API response - w/ client_id",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"tempor ipsum commodo aliquip\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"sed labore\",\n    \"state\": \"officia\",\n    \"code_challenge\": \"est adipisicing Excepteur commodo amet\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "b307feab-4a68-49af-86c9-9b9a0d366c71",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "ab9aeac8-82c6-419f-9213-496850149f8b",
+              "name": "[400] Error bad request API response - w/ state",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"officia labori\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"aliq\",\n    \"client_id\": \"esse nisi\",\n    \"code_challenge\": \"ad voluptate Lorem mollit\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "97cee2a2-d741-4e19-9c9d-a0388d727e0e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "58fdb7c2-6832-43b2-bb83-117c67329c8a",
+              "name": "[400] Error bad request API response - w/ code_challenge",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"voluptate laborum dolor\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"fugiat velit elit\",\n    \"client_id\": \"occaecat qui cupidatat eiusmod\",\n    \"state\": \"sunt dolore ut est anim\",\n    \"code_challenge_method\": \"S256\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "aa6547ee-eca0-463c-a982-e73fe4d0ae2b",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "8c4964b7-3b30-4f04-a5e7-c8f25c96e487",
+              "name": "[400] Error bad request API response - w/ code_challenge_method",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"pariatur mollit\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"ipsum sunt ex adipisicing\",\n    \"client_id\": \"elit est nisi\",\n    \"state\": \"cillum adipisicing\",\n    \"code_challenge\": \"ad\",\n    \"response_type\": \"code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "9a06fb57-a9f6-4d3e-8187-039d275f779d",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "fdd8b3b2-2840-4eca-92f9-782d4f2e3598",
+              "name": "[400] Error bad request API response - w/ response_type",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"mollit\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"ut\",\n    \"client_id\": \"sunt aute\",\n    \"state\": \"est mollit\",\n    \"code_challenge\": \"Excepteur Lorem irure\",\n    \"code_challenge_method\": \"S256\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a3bb3626-8adf-4a28-8520-d3ef786da28b",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "05fc3bb9-8515-4c2d-9bc5-22ef2b958d0d",
+              "name": "[401] Error unauthorized API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"irure eiusmod pariatur nul\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"anim\",\n    \"client_id\": \"non consectetur sunt\",\n    \"state\": \"labo\",\n    \"code_challenge\": \"fugiat cillum officia laborum\",\n    \"code_challenge_method\": \"S256\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "b83bd2df-9c97-412b-a557-ebae5bdb1858",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "a105e84c-1da7-4b84-a044-a5d420861ea8",
+              "name": "[403] Error Forbidden API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"velit officia pariatur nisi\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"exercitation Duis ex sed consectetur\",\n    \"client_id\": \"dolor e\",\n    \"state\": \"nisi consectetur elit deserunt\",\n    \"code_challenge\": \"pariatur enim dolor reprehenderit\",\n    \"code_challenge_method\": \"S256\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "567d9215-8e7c-483b-856a-39e2dfce752e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 403\", function() {",
+                      "  pm.response.to.have.status(403);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "eab481da-aa00-423a-9aa4-31551d79f397",
+              "name": "[429] Error Too many request API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "url"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"cupidatat tempor Duis qui est\",\n    \"scope\": \"AIS\",\n    \"redirect_uri\": \"dolore enim\",\n    \"client_id\": \"amet est ut sed\",\n    \"state\": \"laborum i\",\n    \"code_challenge\": \"quis id\",\n    \"code_challenge_method\": \"S256\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "51fb5203-01ec-4bb2-9baa-c5956740a5f0",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 429\", function() {",
+                      "  pm.response.to.have.status(429);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        },
+        {
+          "name": "Get Tokens",
+          "item": [
+            {
+              "id": "8032681a-6e4f-448b-bc03-673506acc8b3",
+              "name": "[200] Successful Response - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"tempor velit reprehenderit aliqua\",\n    \"code\": \"id laborum elit nisi fugiat\",\n    \"redirect_uri\": \"sint non Ut\",\n    \"client_id\": \"reprehenderit esse culpa magna\",\n    \"code_verifier\": \"irure labore aliquip Duis\",\n    \"gran_type\": \"authorization_code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "878cab02-f1f5-4499-9784-86c8d62a78b8",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "2d051960-2dc3-4ec7-a7c3-378243ea30bb",
+              "name": "[400] Invalid body",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "96802acd-e68b-420c-80b3-cc2fcc0caba8",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "a9136e37-f290-4a1e-83d3-cc2d435b7051",
+              "name": "[401] Error unauthorized API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"enim ipsum proident nostrud do\",\n    \"code\": \"ullamco\",\n    \"redirect_uri\": \"magna\",\n    \"client_id\": \"pariatur minim dolor nisi\",\n    \"code_verifier\": \"nisi Excepteur sed\",\n    \"gran_type\": \"authorization_code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "2ddf68b0-56dc-4104-b9f5-4a9163af2b44",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "169f5b73-c931-4da4-a6c6-9d9bbca41a68",
+              "name": "[403] Error Forbidden API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"voluptate id fugiat cillum\",\n    \"refresh_token\": \"minim cillum\",\n    \"client_id\": 61992976,\n    \"grant_type\": \"refresh_token\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "b7ea203d-c46f-48f2-80cc-0a00980be007",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 403\", function() {",
+                      "  pm.response.to.have.status(403);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "0051bce8-bd6c-4609-8490-c8b8e730c51d",
+              "name": "[429] Error Too many request API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "authorization",
+                    "token"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"Ut cillum do Lorem\",\n    \"code\": \"ut adipisicing ex pariatur\",\n    \"redirect_uri\": \"magna sit anim esse\",\n    \"client_id\": \"anim mollit culpa\",\n    \"code_verifier\": \"voluptate esse in\",\n    \"gran_type\": \"authorization_code\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "265ebf36-7a88-4a96-bbfa-0c7f3c8b2b6f",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 429\", function() {",
+                      "  pm.response.to.have.status(429);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ConsentObject",
+      "item": [
+        {
+          "name": "Get ConsentObject",
+          "item": [
+            {
+              "id": "063cac01-5038-4cfc-a2fe-d54a407fcb7d",
+              "name": "[200] Successful Response - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "Excepteur eu",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "aliqua in",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "veniam ullamco et",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "veniam elit nostrud sit",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "Excepteur laborum culpa do",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 93858009,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"dolore veniam mollit\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "3c18d326-fce2-461d-84f5-c253e6803f02",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "353b5d02-5ce0-4e46-8091-f47575ab1208",
+              "name": "[200] Successful Response - all parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "in et",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "laborum",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "amet sit nostrud ea",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "consequat",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "do proident tempor",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 66972654,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"ipsum\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e4069601-5600-4d17-beee-85a2f2650387",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "29e04622-ae36-4ef4-8c58-fe80f15b9a51",
+              "name": "[400] Invalid X-RequestID",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "commodo occaecat incididunt laborum",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "fugiat magna Ut in id",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "culpa incididunt nostrud in",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "aliqua est sint aute",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 41633202,\n        \"combinedServiceIndicator\": false\n    },\n    \"aspsp\": \"culpa Dui\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "72d18608-0009-4774-a09f-1ebe008f86b8",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "fd8a2d72-ec08-4791-adb2-c581bfbca0a7",
+              "name": "[400] Invalid RedsysAuthorization",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "esse in pariatur Lorem enim",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "ad aliquip laboris in ut",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "culpa eu in sunt ut",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "fugiat id veniam ipsum",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 66896950,\n        \"combinedServiceIndicator\": false\n    },\n    \"aspsp\": \"ex Lorem in voluptate\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "8fb07767-2335-40a5-8d0d-bb7284614076",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "ec1728c7-f030-4a67-a27a-66d3067b116f",
+              "name": "[400] Invalid PSU-IPAddress",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "qui minim dolor",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "cillum nostrud",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "aliquip labore",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "cillum minim ullamco",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 92809522,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"Excepteur\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "a5e206d5-358d-4379-aa05-a13044707b48",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "2bcf2d5c-2833-4033-adf0-302d360f5757",
+              "name": "[400] Invalid TPPRedirectPreferred",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "aliqua dolor",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "ut tempor ad fugiat dolor",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "eu minim",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "reprehenderit qui in dolore sit",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "qui consectetur commodo",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 85720478,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"esse Ut\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "f6fd3f03-6b28-4d3f-80fe-9cfeec16dee7",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "08dabf47-2a85-4469-ac39-0f4a5103d7bc",
+              "name": "[400] Invalid TPPRedirectURI",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "Ut laborum dolore anim irure",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "sit",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "sed esse dolore",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "c",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": -76986898,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"nostrud aliqua labore esse cillum\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "01f5d7ed-edf0-415d-bef6-23578294966a",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "4db937fe-bb9d-4f1c-98c3-2e12ee1cbc33",
+              "name": "[400] Invalid TPP-NokRedirectURI",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "fake-invalid-value",
+                    "disabled": false
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "et minim nisi",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "in qui",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "cillum anim",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "in ut sit exercitation dolore",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": -10375870,\n        \"combinedServiceIndicator\": true\n    },\n    \"aspsp\": \"tempor eiusmod ad\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "77a5c41b-2f70-4fcb-b1fe-78623909e881",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "646e07b9-4bd9-40d6-b19f-a2780bc764f8",
+              "name": "[400] Invalid body",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "eiusmod sed fugiat",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "Lorem",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "aliquip Ut moll",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "minim",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "ea",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "6c943eec-2ff5-4924-9ba5-0b9c3bf3f826",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "9375ad55-5558-4163-a773-2101f8baa517",
+              "name": "[400] Error bad request API response - w/ consent",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "cillum",
+                    "disabled": true
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "proident sint Lorem",
+                    "disabled": true
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "sunt in nostrud voluptat",
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "tempor exercitation",
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "nisi",
+                    "disabled": true
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"aspsp\": \"commodo non est\"\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "e9969e40-61b2-4d44-92ad-dc22a0c8d93e",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "4aa6e9eb-f62a-4781-99c1-370173d98f4d",
+              "name": "[400] Error bad request API response - w/ aspsp",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "aute enim",
+                    "disabled": true
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "laboris voluptate ipsum",
+                    "disabled": true
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "ex elit",
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "occaecat",
+                    "disabled": true
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "aliqua in",
+                    "disabled": true
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": -66968283,\n        \"combinedServiceIndicator\": true\n    }\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "89aad184-1ac2-401c-b810-647a27c4e280",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 400\", function() {",
+                      "  pm.response.to.have.status(400);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "f542a9c5-97dd-4fbf-a01a-249e1af30f7d",
+              "name": "[401] Error unauthorized API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "dolor consectetur",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "elit enim qui eu et",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "elit",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "culpa sunt dolore",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "sit",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": -34862309,\n        \"combinedServiceIndicator\": false\n    }\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "004e2b8b-886f-49f9-8e13-9f343cbf0f26",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 401\", function() {",
+                      "  pm.response.to.have.status(401);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "d2c5411e-5c6c-4a85-a05f-9d8c8f11127d",
+              "name": "[403] Error Forbidden API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "occaecat incididunt in ea Ut",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "aute",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "Excepteur nulla sint",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "esse volu",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "incididunt culpa",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": -65333375,\n        \"combinedServiceIndicator\": true\n    }\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "110fa6c7-9214-4e87-9114-d8fd3a229d27",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 403\", function() {",
+                      "  pm.response.to.have.status(403);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            },
+            {
+              "id": "0a569a96-b3b4-4bb8-a042-3547a88eb6dc",
+              "name": "[429] Error Too many request API response",
+              "request": {
+                "url": {
+                  "path": [
+                    "consent"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "content-type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "X-RequestID",
+                    "value": "pariatur ipsum",
+                    "disabled": false
+                  },
+                  {
+                    "key": "RedsysAuthorization",
+                    "value": "sit",
+                    "disabled": false
+                  },
+                  {
+                    "key": "PSU-IPAddress",
+                    "value": "anim officia voluptate",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectPreferred",
+                    "value": true,
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPPRedirectURI",
+                    "value": "do Ut cupidatat nostrud",
+                    "disabled": false
+                  },
+                  {
+                    "key": "TPP-NokRedirectURI",
+                    "value": "qui incididunt non dolore nisi",
+                    "disabled": false
+                  }
+                ],
+                "method": "POST",
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"consent\": {\n        \"access\": {},\n        \"recurringIndicator\": true,\n        \"validUntil\": \"YYYY-MM-DD\",\n        \"frequencyPerDay\": 20180930,\n        \"combinedServiceIndicator\": false\n    }\n}"
+                }
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "57bb0c18-72b8-43cf-a302-577b134e8a77",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 429\", function() {",
+                      "  pm.response.to.have.status(429);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Status",
+      "item": [
+        {
+          "name": "Status of the API",
+          "item": [
+            {
+              "id": "b81e51d9-2542-477d-8c04-1d475e1f720a",
+              "name": "[200] Ok - required parameters",
+              "request": {
+                "url": {
+                  "path": [
+                    "status"
+                  ],
+                  "host": [
+                    "{{base-url}}"
+                  ],
+                  "query": [],
+                  "variable": []
+                },
+                "header": [
+                  {
+                    "key": "accept",
+                    "value": "application/json"
+                  }
+                ],
+                "method": "GET"
+              },
+              "response": [],
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "id": "5c9c4eac-2d12-4a7e-bd1d-84525a8241be",
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Content-Type is present\", function() {",
+                      "  pm.expect(pm.response.headers.has(\"Content-Type\", \"application/json\"));",
+                      "});",
+                      "pm.test(\"Status code is 200\", function() {",
+                      "  pm.response.to.have.status(200);",
+                      "});"
+                    ]
+                  }
+                }
+              ],
+              "disabled": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [],
+  "variable": [
+    {
+      "id": "base-url",
+      "type": "string",
+      "value": "https://api.flanks.io/api-psd2/v0/",
+      "key": "base-url"
+    }
+  ],
+  "info": {
+    "_postman_id": "9092f009-a1f8-4117-948e-6d332747b69c",
+    "name": "FastAPI",
+    "version": {
+      "raw": "0.1.0",
+      "major": 0,
+      "minor": 1,
+      "patch": 0,
+      "prerelease": [],
+      "build": [],
+      "string": "0.1.0"
+    },
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  }
+}

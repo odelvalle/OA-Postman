@@ -1,0 +1,58 @@
+{
+  "variables": {
+    "client_id": "hPbiGhrzczpl6xVE0kYt1r3CGUSTEWMk",
+    "client_secret": "hFMQVYUlYMDdlru4JCW2U0C9SZQL6m4g",
+    "provision_key": "MVnGiavWjtJLxKkPYtPxKYcIt43bP7L0",
+    "username": "omar+dev@odelvalle.com",
+    "password": "Pbt2fu!fY^"
+  },
+  "tests" : {
+    "raw": ""
+  },
+  "paths": {
+  },
+  "preRequestScript": {
+    "raw": [
+      "pm.sendRequest({",
+      "url: pm.environment.get('base-url') + '/oauth2/token',",
+      "method: 'POST',",
+      "header: {\"Content-Type\": \"application/json\"},",
+      "body: { ",
+      "    mode: 'raw',",
+      "    raw:JSON.stringify({",
+      "        \"grant_type\": \"client_credentials\",",
+      "        \"scope\": \"read\",",
+      "        \"client_id\": \"sr85Dz8IgsLevGbxCpAQj2HTUflk1Ec7\",",
+      "        \"client_secret\": \"HuU9ZfuRBrcIjhlcQ4nOa4gXIZdF3M2e\",",
+      "        \"provision_key\": \"MVnGiavWjtJLxKkPYtPxKYcIt43bP7L0\"",
+      "    })}  }, ",
+      "",
+      "function (err, response) {  ",
+      "    var jsonData = response.json();",
+      "    pm.environment.set(\"authorization-code\", jsonData.access_token);",
+      "",
+      "    pm.sendRequest({",
+      "    url: pm.environment.get('base-url') + '/auth/login',",
+      "    method: 'POST',",
+      "    header: {",
+      "        \"Content-Type\": \"application/json\",",
+      "        \"authorization-token\": jsonData.access_token",
+      "    },",
+      "    body: { ",
+      "        mode: 'raw',",
+      "        raw:JSON.stringify({",
+      "            \"username\": \"omar@odelvalle.com\",",
+      "            \"password\": \"X6mHvP^QM^^aM6\"",
+      "        })}  }, ",
+      "",
+      "    function (err, response) {  ",
+      "        var loginData = response.json();",
+      "        pm.environment.set(\"authorization\", loginData.data.access_token); ",
+      "",
+      "        pm.request.headers.add(\"authorization: bearer {{authorization}}\");       ",
+      "        pm.request.headers.add(\"authorization-token: bearer {{authorization-code}}\");       ",
+      "    });",
+      "});"
+    ]
+  }
+}
